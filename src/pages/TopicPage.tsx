@@ -321,7 +321,7 @@ export default function TopicPage() {
           className="space-y-8"
         >
           {/* Analogy */}
-          <div className="bg-gradient-to-r from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 rounded-xl p-6 border border-primary-100 dark:border-primary-800">
+          <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-6 border border-primary-100 dark:border-primary-800">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
               Real-World Analogy
             </h3>

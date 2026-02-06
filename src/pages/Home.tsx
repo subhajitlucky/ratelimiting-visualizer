@@ -132,7 +132,7 @@ export default function Home() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-900/30 dark:to-accent-900/30 rounded-2xl p-8 border border-primary-200 dark:border-primary-800"
+          className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-8 border border-gray-200 dark:border-gray-700"
         >
           <div className="text-center">
             <div className="text-6xl mb-4">🚦</div>
@@ -259,7 +259,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <motion.section
-        className="bg-gradient-to-r from-primary-600 to-accent-600 rounded-2xl p-12 text-white text-center shadow-xl"
+        className="bg-primary-600 dark:bg-primary-700 rounded-2xl p-12 text-white text-center shadow-xl"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
