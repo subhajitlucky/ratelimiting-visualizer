@@ -243,6 +243,12 @@ export default function TopicPage() {
     }
   }
 
+  // Navigation logic
+  const allTopics = TopicData.flatMap((cat) => cat.topics)
+  const currentIndex = allTopics.findIndex((t) => t.id === topicId)
+  const prevTopic = currentIndex > 0 ? allTopics[currentIndex - 1] : null
+  const nextTopic = currentIndex < allTopics.length - 1 ? allTopics[currentIndex + 1] : null
+
   return (
     <div className="space-y-12">
       {/* Breadcrumb */}
@@ -599,48 +605,100 @@ export default function TopicPage() {
         </motion.div>
       )}
 
-      {/* Navigation */}
-      <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex justify-between items-center">
+      {/* Pagination Navigation */}
+      <div className="grid grid-cols-2 gap-4 pt-8 border-t border-gray-200 dark:border-gray-700">
+        {prevTopic ? (
           <Link
-            to="/learn"
-            className="text-primary-600 dark:text-primary-400 hover:underline font-medium flex items-center"
+            to={`/topic/${prevTopic.id}`}
+            className="group flex flex-col p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all text-left"
           >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Back to Learning Path
+            <span className="text-sm text-gray-500 dark:text-gray-400 mb-1 flex items-center">
+              <svg className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Previous Topic
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-white truncate">
+              {prevTopic.title}
+            </span>
           </Link>
+        ) : (
+          <div />
+        )}
+
+        {nextTopic ? (
+          <Link
+            to={`/topic/${nextTopic.id}`}
+            className="group flex flex-col p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all text-right"
+          >
+            <span className="text-sm text-gray-500 dark:text-gray-400 mb-1 flex items-center justify-end">
+              Next Topic
+              <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-white truncate">
+              {nextTopic.title}
+            </span>
+          </Link>
+        ) : (
           <Link
             to="/playground"
-            className="text-primary-600 dark:text-primary-400 hover:underline font-medium flex items-center"
+            className="group flex flex-col p-4 rounded-xl border border-primary-500 bg-primary-50 dark:bg-primary-900/10 text-right"
           >
-            Try Playground
-            <svg
-              className="w-5 h-5 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            <span className="text-sm text-primary-600 dark:text-primary-400 mb-1 flex items-center justify-end">
+              Ready to Practice?
+              <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7" />
+              </svg>
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-white">
+              Open Playground
+            </span>
           </Link>
-        </div>
+        )}
+      </div>
+
+      {/* Navigation Footer */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm font-medium">
+        <Link
+          to="/learn"
+          className="text-primary-600 dark:text-primary-400 hover:underline flex items-center"
+        >
+          <svg
+            className="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Back to Learning Path
+        </Link>
+        <Link
+          to="/playground"
+          className="text-primary-600 dark:text-primary-400 hover:underline flex items-center"
+        >
+          Open Playground
+          <svg
+            className="w-5 h-5 ml-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </Link>
       </div>
     </div>
   )
