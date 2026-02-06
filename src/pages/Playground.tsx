@@ -102,8 +102,8 @@ export default function Playground() {
   const [requestProgress, setRequestProgress] = useState(0)
   const lastRequestTimeRef = useRef(0)
 
-  // Initialize algorithm
-  const initializeAlgorithm = useCallback(() => {
+  // Initialize algorithm when type changes
+  const resetSimulationState = useCallback(() => {
     const algo = createAlgorithm(algorithmType, config)
     setAlgorithm(algo)
     setEvents([])
@@ -111,11 +111,10 @@ export default function Playground() {
     lastRequestTimeRef.current = 0
   }, [algorithmType, config])
 
-  // Initialize algorithm when type changes
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
-    initializeAlgorithm()
-  }, [initializeAlgorithm])
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    resetSimulationState()
+  }, [resetSimulationState])
 
   const handleConfigChange = (paramId: keyof ConfigType, value: number) => {
     setConfig((prev) => ({ ...prev, [paramId]: value }))
@@ -142,7 +141,7 @@ export default function Playground() {
 
   const resetSimulation = () => {
     setIsSimulating(false)
-    initializeAlgorithm()
+    resetSimulationState()
   }
 
   // Simulation loop

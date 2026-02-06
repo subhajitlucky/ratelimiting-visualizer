@@ -55,26 +55,8 @@ export default function TopicPage() {
     if (topic) break
   }
 
-  if (!topic) {
-    return (
-      <div className="text-center py-16">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-          Topic Not Found
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
-          The topic you're looking for doesn't exist.
-        </p>
-        <Link
-          to="/learn"
-          className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
-        >
-          ← Back to Learning Path
-        </Link>
-      </div>
-    )
-  }
-
   const initializeDemo = () => {
+    if (!topic) return
     setDemoTime(0)
     setDemoEvents([])
     setRequestCount(0)
@@ -111,11 +93,30 @@ export default function TopicPage() {
   }
 
   useEffect(() => {
-    if (activeTab === 'demo') {
+    if (activeTab === 'demo' && topic) {
       initializeDemo()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, topic])
+
+  if (!topic) {
+    return (
+      <div className="text-center py-16">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          Topic Not Found
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">
+          The topic you're looking for doesn't exist.
+        </p>
+        <Link
+          to="/learn"
+          className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+        >
+          ← Back to Learning Path
+        </Link>
+      </div>
+    )
+  }
 
   const handleGenerateRequest = () => {
     if (!algorithmInstance) return
