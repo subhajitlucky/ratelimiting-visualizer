@@ -288,12 +288,12 @@ export default function Playground() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Algorithm
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {algorithmOptions.map((option) => (
                   <button
                     key={option.value}
                     onClick={() => setAlgorithmType(option.value)}
-                    className={`p-3 rounded-lg border-2 transition-all ${
+                    className={`p-3 rounded-lg border-2 transition-all flex sm:block items-center gap-3 sm:gap-0 ${
                       algorithmType === option.value
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                         : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 text-gray-700 dark:text-gray-300'

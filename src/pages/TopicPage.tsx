@@ -263,32 +263,34 @@ export default function TopicPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex items-start gap-4 mb-6">
-          <div className="text-6xl">{topic.icon}</div>
-          <div className="flex-1">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="flex flex-col sm:flex-row items-start gap-4 mb-6">
+          <div className="text-6xl mx-auto sm:mx-0">{topic.icon}</div>
+          <div className="flex-1 text-center sm:text-left">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
               {topic.title}
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300">
               {topic.description}
             </p>
           </div>
-          <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${
-            topic.level === 'beginner' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700' :
-            topic.level === 'intermediate' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700' :
-            'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700'
-          }`}>
-            {topic.level}
-          </span>
+          <div className="w-full sm:w-auto flex justify-center sm:block">
+            <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${
+              topic.level === 'beginner' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700' :
+              topic.level === 'intermediate' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700' :
+              'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700'
+            }`}>
+              {topic.level}
+            </span>
+          </div>
         </div>
       </motion.div>
 
       {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-700">
-        <nav className="flex space-x-8" aria-label="Tabs">
+        <nav className="flex -mb-px space-x-4 sm:space-x-8 overflow-x-auto" aria-label="Tabs">
           <button
             onClick={() => setActiveTab('theory')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === 'theory'
                 ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
@@ -298,7 +300,7 @@ export default function TopicPage() {
           </button>
           <button
             onClick={() => setActiveTab('demo')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === 'demo'
                 ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
