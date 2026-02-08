@@ -303,5 +303,99 @@ export function HTTP429Visual({ activeRequests, limit }: { activeRequests: numbe
   )
 }
 
+/**
+ * Retry-After Header Visualization
+ */
+
+export function RetryAfterVisual({ activeRequests, limit }: { activeRequests: number, limit: number }) {
+  const isFull = activeRequests >= limit
+  
+  return (
+    <div className="relative aspect-video bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 overflow-hidden flex flex-col items-center justify-center p-8">
+      {/* Background Grid */}
+      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#00ff41_1px,transparent_1px)] [background-size:25px_25px]" />
+
+      <div className="relative z-10 flex flex-col items-center gap-6">
+        {/* The Server */}
+        <div className="w-16 h-20 bg-black border-2 border-primary-500 rounded-sm relative flex justify-center">
+          <div className="absolute top-2 w-10 h-1 bg-primary-500/30" />
+          <motion.div 
+            className="absolute bottom-2 w-2 h-2 rounded-full bg-primary-500"
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          />
+        </div>
+
+        {/* The "Retry-After" Message Bubble */}
+        <AnimatePresence>
+          {isFull ? (
+            <motion.div
+              initial={{ scale: 0, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="bg-white dark:bg-zinc-900 border-2 border-red-600 p-4 shadow-[4px_4px_0px_0px_rgba(220,38,38,1)] relative"
+            >
+              <div className="font-mono text-[10px] font-black text-red-600 mb-2 uppercase italic">MESSAGE_REJECTED</div>
+              <div className="flex items-end gap-2">
+                <div className="text-3xl font-black italic text-zinc-900 dark:text-white">30</div>
+                <div className="font-mono text-[8px] text-zinc-500 mb-1 font-bold">SEC_WAIT</div>
+              </div>
+              {/* Arrow pointing down to server */}
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-white dark:bg-zinc-900 border-r-2 border-b-2 border-red-600 rotate-45" />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="font-mono text-[10px] text-zinc-400 italic"
+            >
+              WAITING_FOR_LIMIT_EXCEED...
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Animated Countdown Ring */}
+        {isFull && (
+          <div className="relative w-12 h-12 flex items-center justify-center">
+            <svg className="w-full h-full rotate-[-90deg]">
+              <motion.circle
+                cx="24"
+                cy="24"
+                r="20"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="transparent"
+                className="text-red-600/20"
+              />
+              <motion.circle
+                cx="24"
+                cy="24"
+                r="20"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="transparent"
+                strokeDasharray="126"
+                animate={{ strokeDashoffset: [0, 126] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                className="text-red-600"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-1 h-1 bg-red-600 rounded-full animate-ping" />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Child-friendly label */}
+      <div className="absolute bottom-4 inset-x-8 bg-black text-white p-2 font-mono text-[8px] text-center border border-primary-500">
+        STORY: THE SERVER IS LIKE A BUSY LIBRARIAN. IF YOU ASK TOO MANY QUESTIONS, 
+        THEY GIVE YOU A SMALL TICKET THAT SAYS "COME BACK IN 30 SECONDS!"
+      </div>
+    </div>
+  )
+}
+
+
 
 
