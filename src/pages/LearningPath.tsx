@@ -8,73 +8,66 @@ export default function LearningPath() {
   const getLevelColor = (level: string) => {
     switch (level) {
       case 'beginner':
-        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700'
+        return 'text-primary-500 border-primary-500 bg-primary-500/10'
       case 'intermediate':
-        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700'
+        return 'text-yellow-500 border-yellow-500 bg-yellow-500/10'
       case 'advanced':
-        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700'
+        return 'text-red-500 border-red-500 bg-red-500/10'
       default:
-        return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+        return 'text-zinc-500 border-zinc-500 bg-zinc-500/10'
     }
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-24">
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
       >
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-          Learning Path
+        <h1 className="text-5xl font-black italic mb-4 uppercase tracking-tighter">
+          LEARNING_PATH <span className="text-primary-500">_MODS</span>
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl">
-          Explore rate limiting concepts from fundamental principles to advanced
-          system design. Each topic includes interactive visualizations and
-          hands-on simulations.
+        <p className="font-mono text-zinc-500 max-w-3xl border-l-2 border-primary-500 pl-4">
+          A systematic decompression of rate limiting architecture. 
+          Traverse the data structures, from primitive counters to sliding window logs.
         </p>
       </motion.div>
 
       {/* Topic Categories */}
-      <div className="space-y-8">
+      <div className="space-y-16">
         {topics.map((category, categoryIndex) => (
           <motion.section
             key={category.category}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
+            className="space-y-8"
           >
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <div className="flex items-center gap-6">
+              <h2 className="text-3xl font-black uppercase italic whitespace-nowrap">
                 {category.category}
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                {category.description}
-              </p>
+              <div className="h-0.5 bg-black dark:bg-zinc-800 w-full" />
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-8">
               {category.topics.map((topic, topicIndex) => (
                 <Link
                   key={topic.id}
                   to={`/topic/${topic.id}`}
-                  className="block"
+                  className="block group"
                 >
                   <motion.div
-                    className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-300 cursor-pointer h-full"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    className="bg-white dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 p-8 hover:border-primary-500 transition-all relative overflow-hidden"
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{
-                      duration: 0.4,
-                      delay: categoryIndex * 0.1 + topicIndex * 0.05,
-                    }}
-                    whileHover={{ scale: 1.02, y: -4 }}
+                    transition={{ delay: topicIndex * 0.05 }}
                   >
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="text-3xl">{topic.icon}</div>
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="text-4xl grayscale group-hover:grayscale-0 transition-all">{topic.icon}</div>
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold border ${getLevelColor(
+                        className={`font-mono text-[10px] font-bold px-2 py-0.5 border-2 uppercase tracking-widest ${getLevelColor(
                           topic.level
                         )}`}
                       >
@@ -82,29 +75,29 @@ export default function LearningPath() {
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-2xl font-black uppercase italic mb-2 group-hover:text-primary-500 transition-colors">
                       {topic.title}
                     </h3>
 
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    <p className="font-mono text-xs text-zinc-500 mb-6 leading-relaxed">
                       {topic.description}
                     </p>
 
-                    <div className="flex items-center text-primary-600 dark:text-primary-400 font-medium">
-                      <span>Learn more</span>
+                    <div className="flex items-center gap-2 font-mono text-[10px] font-black uppercase tracking-widest text-primary-600 dark:text-primary-400">
+                      <span>ACCESS_MODULE</span>
                       <svg
-                        className="w-4 h-4 ml-2"
+                        className="w-3 h-3 group-hover:translate-x-1 transition-transform"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
+                    </div>
+
+                    {/* Progress Bar Placeholder */}
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-zinc-100 dark:bg-zinc-800">
+                      <div className="w-0 group-hover:w-1/4 h-full bg-primary-500 transition-all duration-700" />
                     </div>
                   </motion.div>
                 </Link>
@@ -114,46 +107,27 @@ export default function LearningPath() {
         ))}
       </div>
 
-      {/* Progress indicator */}
+      {/* CTA Section */}
       <motion.div
-        className="bg-gradient-to-r from-primary-100 to-accent-100 dark:from-primary-900/30 dark:to-accent-900/30 rounded-2xl p-8 border border-primary-200 dark:border-primary-800 mt-12"
+        className="bg-black text-white p-12 border-4 border-primary-500 relative overflow-hidden"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
       >
-        <div className="text-center">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Interactive Playground
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#00ff41_1px,transparent_1px)] [background-size:20px_20px]" />
+        <div className="relative z-10 text-center space-y-8">
+          <h3 className="text-4xl md:text-6xl font-black italic uppercase">
+            LIVE_SIMULATION
           </h3>
-          <p className="text-gray-700 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
-            After learning the concepts, test your knowledge in the Playground.
-            Generate simulated traffic, apply different algorithms, and see
-            rate limiting in action.
+          <p className="font-mono text-zinc-400 text-sm max-w-xl mx-auto">
+            Decompressing theory is only the first stage. Validate your understanding 
+            through live execution in the playground.
           </p>
           <Link
             to="/playground"
-            className="inline-flex items-center px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+            className="inline-block px-12 py-5 bg-primary-500 text-black font-black text-xl hover:bg-primary-400 transition-colors uppercase italic"
           >
-            <svg
-              className="w-6 h-6 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            Open Playground
+            EXECUTE_PLAYGROUND
           </Link>
         </div>
       </motion.div>

@@ -1,41 +1,46 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Syne:wght@400..800&display=swap');
 
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
+  --font-display: "Syne", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 
-  --color-accent-50: #eef2ff;
-  --color-accent-100: #e0e7ff;
-  --color-accent-200: #c7d2fe;
-  --color-accent-300: #a5b4fc;
-  --color-accent-400: #818cf8;
-  --color-accent-500: #6366f1;
-  --color-accent-600: #4f46e5;
-  --color-accent-700: #4338ca;
-  --color-accent-800: #3730a3;
-  --color-accent-900: #312e81;
+  --color-primary-50: #f0fff4;
+  --color-primary-100: #dcffe4;
+  --color-primary-200: #bdffca;
+  --color-primary-300: #7aff96;
+  --color-primary-400: #2eff5f;
+  --color-primary-500: #00ff41; /* Matrix/Cyber Green */
+  --color-primary-600: #00d637;
+  --color-primary-700: #00a82d;
+  --color-primary-800: #008527;
+  --color-primary-900: #006d23;
 
-  --animate-counter-up: counter-up 0.5s ease-out;
+  --color-accent-50: #f5f3ff;
+  --color-accent-100: #ede9fe;
+  --color-accent-200: #ddd6fe;
+  --color-accent-300: #c4b5fd;
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
+  --color-accent-700: #6d28d9;
+  --color-accent-800: #5b21b6;
+  --color-accent-900: #4c1d95;
+
+  --animate-counter-up: counter-up 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --animate-bucket-fill: bucket-fill 1s ease-in-out;
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-scanline: scanline 8s linear infinite;
 
   @keyframes counter-up {
     0% {
-      transform: scale(0.5);
+      transform: translateY(10px);
       opacity: 0;
     }
     100% {
-      transform: scale(1);
+      transform: translateY(0);
       opacity: 1;
     }
   }
@@ -48,33 +53,56 @@
       height: var(--fill-height);
     }
   }
+
+  @keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
 }
 
 @layer base {
   * {
-    @apply border-gray-200 dark:border-gray-800 outline-none;
+    @apply border-zinc-200 dark:border-zinc-800 outline-none;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
 
   body {
-    @apply bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    @apply bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors duration-300;
+    font-family: var(--font-mono);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply tracking-tight uppercase;
+  }
+}
+
+@layer components {
+  .brutalist-card {
+    @apply bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all;
+  }
+
+  .tech-container {
+    @apply relative overflow-hidden border border-zinc-200 dark:border-zinc-800;
+  }
+
+  .tech-container::after {
+    content: '';
+    @apply absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05];
+    background-image: linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, .05) 25%, rgba(0, 0, 0, .05) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, .05) 75%, rgba(0, 0, 0, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 0, 0, .05) 25%, rgba(0, 0, 0, .05) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, .05) 75%, rgba(0, 0, 0, .05) 76%, transparent 77%, transparent);
+    background-size: 50px 50px;
   }
 }
 
 @layer utilities {
-  .animate-counter-up {
-    animation: counter-up 0.5s ease-out;
+  .text-glow {
+    text-shadow: 0 0 12px rgba(0, 255, 65, 0.4);
   }
 
-  .animate-bucket-fill {
-    animation: bucket-fill 1s ease-in-out;
-  }
-
-  .animate-pulse-slow {
-    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  .perspective-1000 {
+    perspective: 1000px;
   }
 }
 
@@ -86,11 +114,5 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-
-  .animate-counter-up,
-  .animate-bucket-fill,
-  .animate-pulse-slow {
-    animation: none !important;
   }
 }

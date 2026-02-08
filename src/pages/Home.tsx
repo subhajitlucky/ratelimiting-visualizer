@@ -10,282 +10,225 @@ export default function Home() {
   }
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-24 py-12 relative">
+      {/* Decorative Grid Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20 dark:opacity-10">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#00ff41_1px,transparent_1px)] [background-size:40px_40px]" />
+      </div>
+
       {/* Hero Section */}
-      <section className="text-center space-y-6 py-12">
+      <section className="relative z-10 text-center space-y-8 max-w-5xl mx-auto">
+        <div className="inline-block px-3 py-1 border border-primary-500/50 text-primary-600 dark:text-primary-400 text-xs font-mono mb-4 animate-pulse">
+          SYSTEM_STATUS: OPERATIONAL // V.2.0.4
+        </div>
+        
         <motion.h1
-          className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          className="text-6xl md:text-8xl font-black text-zinc-900 dark:text-white leading-tight italic"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "circOut" }}
         >
-          Rate Limiting
-          <span className="block text-primary-600 dark:text-primary-400">
-            Visualizer
+          RATE LIMITING
+          <span className="block text-primary-500 text-glow">
+            VISUALIZER
           </span>
         </motion.h1>
 
         <motion.p
-          className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed"
+          className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto font-mono leading-relaxed border-l-2 border-primary-500 pl-6 text-left"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
         >
-          Learn how rate limiting works through interactive visualizations.
-          Explore algorithms, see real-time simulations, and understand the
-          trade-offs behind protecting APIs and services from abuse.
+          Master the architecture of traffic control. Interactive simulations for modern distributed systems. 
+          Analyze algorithms. Understand trade-offs. Secure your infrastructure.
         </motion.p>
 
         <motion.div
-          className="flex flex-col sm:flex-row gap-4 justify-center pt-4"
+          className="flex flex-col sm:flex-row gap-6 justify-center pt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
         >
           <button
             onClick={handlePlaygroundClick}
-            className="px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2"
+            className="px-10 py-5 bg-zinc-900 dark:bg-primary-500 text-white dark:text-black font-bold text-xl brutalist-card flex items-center justify-center gap-3 group"
           >
+            LAUNCH_PLAYGROUND
             <svg
-              className="w-6 h-6"
+              className="w-6 h-6 transform group-hover:translate-x-1 transition-transform"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-            Open Playground
           </button>
           <Link
             to="/learn"
-            className="px-8 py-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-xl font-semibold text-lg transition-colors duration-200"
+            className="px-10 py-5 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white font-bold text-xl border-2 border-black dark:border-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
-            Start Learning
+            READ_DOCS
           </Link>
         </motion.div>
       </section>
 
-      {/* What is Rate Limiting */}
-      <section className="grid md:grid-cols-2 gap-12 items-center">
+      {/* Concept Grid */}
+      <section className="grid md:grid-cols-2 gap-0 border-2 border-black dark:border-zinc-800 bg-black overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          className="bg-white dark:bg-zinc-900 p-12 space-y-6 border-b-2 md:border-b-0 md:border-r-2 border-black dark:border-zinc-800"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            What is Rate Limiting?
+          <h2 className="text-4xl font-black text-zinc-900 dark:text-white">
+            WHY RATE LIMIT?
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-6">
-            Rate limiting is a technique to control the rate of traffic sent or
-            received by a network interface controller. It prevents abuse,
-            ensures fair usage, and protects services from being overwhelmed by
-            too many requests.
-          </p>
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-primary-600 dark:text-primary-400 font-semibold">
-                  ✓
-                </span>
+          <div className="space-y-8 font-mono">
+            {[
+              { title: "PREVENT_ABUSE", desc: "Block DoS attacks and brute force attempts at the edge." },
+              { title: "FAIR_USAGE", desc: "Ensure equitable resource distribution across your user base." },
+              { title: "COST_CONTROL", desc: "Protect downstream services and manage infrastructure spend." }
+            ].map((item, i) => (
+              <div key={i} className="group">
+                <div className="text-primary-500 font-bold mb-1">[{i.toString().padStart(2, '0')}] {item.title}</div>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm">{item.desc}</p>
               </div>
-              <p className="text-gray-700 dark:text-gray-300">
-                Prevent DoS attacks and brute force attempts
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-primary-600 dark:text-primary-400 font-semibold">
-                  ✓
-                </span>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300">
-                Ensure fair resource allocation among users
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-primary-600 dark:text-primary-400 font-semibold">
-                  ✓
-                </span>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300">
-                Control costs and maintain service quality
-              </p>
-            </div>
+            ))}
           </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-8 border border-gray-200 dark:border-gray-700"
+          className="bg-zinc-100 dark:bg-zinc-950 p-12 flex flex-col justify-center relative overflow-hidden group"
         >
-          <div className="text-center">
-            <div className="text-6xl mb-4">🚦</div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Traffic Light Analogy
+          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+            <div className="absolute top-0 left-0 w-full h-full bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,#00ff41_3px,transparent_3px)] [background-size:100%_4px]" />
+          </div>
+          <div className="relative z-10 text-center">
+            <div className="text-8xl mb-6 grayscale group-hover:grayscale-0 transition-all duration-500">🚦</div>
+            <h3 className="text-2xl font-black text-zinc-900 dark:text-white mb-4 uppercase italic">
+              The Flow Protocol
             </h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              Just as traffic lights control the flow of cars, rate limiting
-              controls the flow of requests. Too many requests? You'll hit a red
-              light and have to wait.
+            <p className="text-zinc-600 dark:text-zinc-400 font-mono text-sm leading-relaxed max-w-sm mx-auto">
+              Just as traffic lights regulate the asphalt, rate limiting governs the digital packet flow. 
+              Efficiency through restriction.
             </p>
           </div>
         </motion.div>
       </section>
 
-      {/* Interactive Preview */}
-      <section className="py-12">
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            How Algorithms Work
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
-            Different algorithms handle rate limiting in unique ways. Each has
-            trade-offs in memory usage, accuracy, and burst handling.
+      {/* Algorithms Section */}
+      <section className="space-y-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-black dark:border-white pb-6">
+          <h2 className="text-5xl font-black italic">ALGORITHMS</h2>
+          <p className="font-mono text-sm text-zinc-500 max-w-md">
+            Each protocol offers unique trade-offs in precision, memory overhead, and burst capacity.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             {
               name: 'Fixed Window',
-              icon: '🪟',
-              description: 'Counts requests in fixed time intervals',
-              pros: ['Simple', 'Memory efficient', 'Easy to implement'],
-              cons: ['Burst at window edge', 'Not evenly distributed'],
+              id: 'FWC-01',
+              description: 'Discrete intervals, reset at boundary.',
+              stats: { memory: 'Low', precision: 'Medium', burst: 'High (Edge)' }
             },
             {
               name: 'Token Bucket',
-              icon: '🪣',
-              description: 'Tokens accumulate over time, spent on requests',
-              pros: ['Allows bursts', 'Smooth distribution', 'Flexible'],
-              cons: ['More state', 'Complex refill logic'],
+              id: 'TKB-02',
+              description: 'Refillable capacity for burst handling.',
+              stats: { memory: 'Medium', precision: 'High', burst: 'Controlled' }
             },
             {
               name: 'Leaky Bucket',
-              icon: '🕳️',
-              description: 'Requests queue and leak out at constant rate',
-              pros: ['Smooth output', 'No bursts', 'Queueing'],
-              cons: ['Requests may queue', 'Memory overhead'],
+              id: 'LKB-03',
+              description: 'Constant output rate via queueing.',
+              stats: { memory: 'Medium', precision: 'High', burst: 'None' }
             },
             {
               name: 'Sliding Log',
-              icon: '📋',
-              description: 'Stores timestamps of all requests in window',
-              pros: ['Accurate', 'No edge bursts', 'Precise'],
-              cons: ['Memory heavy', 'Storage cleanup needed'],
+              id: 'SLG-04',
+              description: 'Exact timestamp tracking for precision.',
+              stats: { memory: 'High', precision: 'Max', burst: 'Accurate' }
             },
             {
               name: 'Sliding Counter',
-              icon: '📊',
-              description: 'Approximates sliding window with weighted counts',
-              pros: ['Memory efficient', 'No edge bursts', 'Fast'],
-              cons: ['Approximation error', 'Slightly complex'],
+              id: 'SLW-05',
+              description: 'Weighted approximation of sliding windows.',
+              stats: { memory: 'Low', precision: 'High', burst: 'Smooth' }
             },
             {
-              name: 'Comparison',
-              icon: '⚖️',
-              description: 'See all algorithms side-by-side on same traffic',
-              pros: ['Visual comparison', 'Understand trade-offs', 'Best choice'],
-              cons: ['Requires understanding', 'More to learn'],
+              name: 'System Audit',
+              id: 'AUD-06',
+              description: 'Comparative analysis of all protocols.',
+              stats: { memory: 'N/A', precision: 'N/A', burst: 'Comparative' }
             },
           ].map((algo, index) => (
             <motion.div
               key={algo.name}
-              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow cursor-pointer"
+              className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 p-8 hover:border-primary-500 dark:hover:border-primary-500 transition-all cursor-pointer group relative overflow-hidden"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
+              transition={{ delay: index * 0.05 }}
               onClick={() => navigate('/learn')}
             >
-              <div className="text-4xl mb-4">{algo.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <div className="absolute top-0 right-0 p-4 font-mono text-[10px] text-zinc-400">
+                {algo.id}
+              </div>
+              <h3 className="text-2xl font-black mb-4 group-hover:text-primary-500 transition-colors uppercase italic">
                 {algo.name}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-zinc-600 dark:text-zinc-400 font-mono text-sm mb-8 h-12">
                 {algo.description}
               </p>
-              <div className="space-y-2">
-                <div>
-                  <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                    Pros:
-                  </p>
-                  <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 ml-4">
-                    {algo.pros.map((pro) => (
-                      <li key={pro} className="list-disc">
-                        {pro}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-red-600 dark:text-red-400">
-                    Cons:
-                  </p>
-                  <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 ml-4">
-                    {algo.cons.map((con) => (
-                      <li key={con} className="list-disc">
-                        {con}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              
+              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                {Object.entries(algo.stats).map(([label, val]) => (
+                  <div key={label}>
+                    <div className="text-[10px] font-mono text-zinc-400 uppercase">{label}</div>
+                    <div className="text-xs font-mono font-bold dark:text-zinc-300">{val}</div>
+                  </div>
+                ))}
               </div>
+
+              <div className="absolute bottom-0 left-0 w-0 h-1 bg-primary-500 group-hover:w-full transition-all duration-500" />
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Footer CTA */}
       <motion.section
-        className="bg-primary-600 dark:bg-primary-700 rounded-2xl p-12 text-white text-center shadow-xl"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
+        className="relative py-24 px-8 border-4 border-black dark:border-primary-500 bg-black text-white text-center overflow-hidden"
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-3xl font-bold mb-4">
-          Ready to Dive Deeper?
-        </h2>
-        <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-          Explore each algorithm interactively, adjust parameters in real-time,
-          and see exactly how rate limiting decisions are made.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            to="/learn"
-            className="px-8 py-4 bg-white text-primary-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
-          >
-            View Learning Path
-          </Link>
-          <Link
-            to="/playground"
-            className="px-8 py-4 bg-primary-700 hover:bg-primary-800 text-white rounded-xl font-semibold transition-colors"
-          >
-            Try Playground
-          </Link>
+        <div className="absolute inset-0 opacity-20 bg-[linear-gradient(45deg,#00ff41_1px,transparent_1px),linear-gradient(-45deg,#00ff41_1px,transparent_1px)] [background-size:20px_20px]" />
+        
+        <div className="relative z-10 max-w-2xl mx-auto space-y-8">
+          <h2 className="text-5xl md:text-7xl font-black italic">
+            INITIATE_DIVE
+          </h2>
+          <p className="text-zinc-400 font-mono text-lg">
+            Ready to test the boundaries of your infrastructure? 
+            Deploy simulations in our sandbox environment.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <Link
+              to="/playground"
+              className="px-10 py-5 bg-primary-500 text-black font-black text-xl hover:bg-primary-400 transition-colors"
+            >
+              RUN_SIMULATION
+            </Link>
+          </div>
         </div>
-      </motion.section>
+      </section>
     </div>
   )
 }
