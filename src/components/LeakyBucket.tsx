@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface LeakyBucketProps {
   waterLevel: number
@@ -7,89 +7,121 @@ interface LeakyBucketProps {
   currentTime: number
 }
 
+/**
+ * LEAKY BUCKET - CHILD-FRIENDLY EXPLANATION:
+ * Think of a "Smoothie Funnel".
+ * Everyone wants a smoothie at the same time and pours it in (Requests).
+ * But the funnel only has a tiny hole at the bottom.
+ * It lets the smoothie out drop by drop, at a perfectly steady speed.
+ * If too many people pour in at once, the funnel gets full and spills!
+ * This keeps the flow perfectly smooth for whoever is drinking at the bottom.
+ */
+
 export default function LeakyBucket({
   waterLevel,
   capacity,
   leakRate,
 }: LeakyBucketProps) {
   const fillPercentage = Math.min(100, (waterLevel / capacity) * 100)
+  const isOverflowing = waterLevel >= capacity
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-        Leaky Bucket
-      </h3>
+    <div className="space-y-8">
+      {/* Brutalist Header */}
+      <div className="flex justify-between items-end border-b-2 border-black dark:border-white pb-2">
+        <h3 className="text-2xl font-black italic uppercase tracking-tighter">
+          LEAK_BUFFER_ARRAY
+        </h3>
+        <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">
+          DRAIN_VELOCITY: {leakRate}/SEC
+        </div>
+      </div>
 
-      {/* Bucket visualization */}
-      <div className="flex justify-center mb-6">
-        <div className="relative w-32 h-48">
-          {/* Bucket outline */}
-          <div className="absolute inset-0 border-4 border-accent-500 dark:border-accent-400 rounded-b-lg rounded-t-none" />
+      {/* Main Visualization: The "Funnel" */}
+      <div className="relative aspect-video bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 flex items-center justify-center overflow-hidden">
+        {/* Particle Rain (The Incoming Requests) */}
+        <div className="absolute inset-0 pointer-events-none">
+          <AnimatePresence>
+            {waterLevel > 0 && Array.from({ length: 3 }).map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ y: -20, x: "50%", opacity: 0 }}
+                animate={{ y: 100, opacity: [0, 1, 0] }}
+                transition={{ duration: 1, repeat: Infinity, delay: i * 0.3 }}
+                className="absolute w-1 h-4 bg-accent-500"
+              />
+            ))}
+          </AnimatePresence>
+        </div>
 
-          {/* Water fill */}
-          <motion.div
-            className="absolute bottom-0 left-0 right-0 bg-accent-500/30 dark:bg-accent-400/30 border-t-4 border-accent-500 dark:border-accent-400 rounded-b-lg rounded-t-none"
-            animate={{ height: `${fillPercentage}%` }}
-            transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          />
+        {/* The Bucket / Funnel */}
+        <div className="relative w-40 h-56 flex flex-col items-center">
+          {/* Funnel Body */}
+          <div className="relative w-full h-48 border-x-4 border-black dark:border-white bg-white dark:bg-black overflow-hidden shadow-[0px_10px_0px_0px_rgba(139,92,246,0.3)]">
+            {/* Liquid Fill */}
+            <motion.div 
+              className="absolute bottom-0 inset-x-0 bg-accent-500"
+              animate={{ height: `${fillPercentage}%` }}
+              transition={{ type: "spring", stiffness: 40, damping: 10 }}
+            >
+              {/* Animated Ripples */}
+              <motion.div 
+                className="absolute top-0 inset-x-0 h-2 bg-white/20"
+                animate={{ x: ["-100%", "100%"] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              />
+            </motion.div>
 
-          {/* Water waves effect */}
-          {waterLevel > 0 && (
-            <motion.div
-              className="absolute bottom-0 left-0 right-1 bg-accent-500/20 dark:bg-accent-400/20 rounded-t-full"
-              style={{ height: '20px' }}
-              animate={{ x: [0, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
+            {/* Overflow Alert */}
+            <AnimatePresence>
+              {isOverflowing && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 bg-red-500/20 flex items-center justify-center"
+                >
+                  <span className="font-black text-red-600 dark:text-red-400 text-[10px] animate-pulse">BUFFER_MAXED</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* The Drain Hole (The "Leak") */}
+          <div className="w-8 h-4 border-x-4 border-b-4 border-black dark:border-white bg-black dark:bg-white" />
+          
+          {/* Drip Animation */}
+          {waterLevel > 0.1 && (
+            <motion.div 
+              className="w-2 h-2 bg-accent-500 rounded-full"
+              animate={{ y: [0, 40], opacity: [1, 0], scale: [1, 0.5] }}
+              transition={{ duration: 1 / leakRate, repeat: Infinity, ease: "easeIn" }}
             />
           )}
+        </div>
 
-          {/* Overflow indicator */}
-          {waterLevel >= capacity && (
-            <motion.div
-              className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-red-500 text-xs font-bold bg-white dark:bg-gray-800 px-2 py-1 rounded shadow"
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              OVERFLOW
-            </motion.div>
-          )}
+        {/* Telemetry Labels */}
+        <div className="absolute top-8 left-8 flex flex-col font-mono">
+          <div className="text-[10px] text-zinc-400">BUFFER_LOAD</div>
+          <div className="text-3xl font-black italic text-accent-600">{Math.round(fillPercentage)}%</div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 text-center">
-        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-          <div className="text-2xl font-bold text-accent-600 dark:text-accent-400">
-            {waterLevel.toFixed(1)}
-          </div>
-          <div className="text-xs text-gray-600 dark:text-gray-400">
-            Water Level
-          </div>
+      {/* Explainer for 5-Year Olds */}
+      <div className="bg-accent-500 text-white p-6 border-2 border-black font-mono text-xs space-y-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="flex gap-4 items-start">
+          <span className="font-black text-black">THE_FUNNEL_STORY:</span>
+          <p className="leading-relaxed text-zinc-900 font-bold">
+            Think of a <span className="italic">Yummy Smoothie Funnel</span>. Everyone pours their smoothies in at once! 
+            But the hole at the bottom is tiny. It only lets <span className="underline">ONE DRIP</span> out at a time. 
+            This keeps the drink flowing perfectly smooth. But if you pour too fast, 
+            the funnel gets too full and spills!
+          </p>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            {capacity}
-          </div>
-          <div className="text-xs text-gray-600 dark:text-gray-400">
-            Bucket Capacity
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-        <div className="flex justify-between">
-          <span>Leak rate:</span>
-          <span className="font-mono">{leakRate} req/sec</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Leak per ms:</span>
-          <span className="font-mono">{(leakRate / 1000).toFixed(3)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Processed reqs:</span>
-          <span className="font-mono">
-            {Math.floor((waterLevel / capacity) * 100)}%
-          </span>
+        
+        <div className="flex justify-between items-center pt-4 border-t border-black/20 text-[10px] font-black uppercase text-zinc-800">
+          <div>INPUT_CAPACITY: {capacity}</div>
+          <div>STABLE_OUTPUT: {leakRate}/S</div>
         </div>
       </div>
     </div>
