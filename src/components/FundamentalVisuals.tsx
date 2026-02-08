@@ -167,3 +167,69 @@ export function ClientServerVisual({ activeRequests, limit, isServer }: { active
   )
 }
 
+/**
+ * Concurrency Limiting Visualization
+ */
+
+export function ConcurrencyVisual({ active, limit }: { active: number, limit: number }) {
+  const isFull = active >= limit
+
+  return (
+    <div className="relative aspect-video bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 overflow-hidden flex flex-col items-center justify-center p-12">
+      {/* Background Grid */}
+      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#00ff41_1px,transparent_1px)] [background-size:20px_20px]" />
+
+      <h3 className="absolute top-4 left-4 font-mono text-[10px] font-black text-zinc-500 uppercase tracking-widest">
+        CONCURRENCY_SLOTS_v1.0
+      </h3>
+
+      {/* The Slots (The "Tables") */}
+      <div className="grid grid-cols-5 gap-4">
+        {Array.from({ length: limit }).map((_, i) => (
+          <div key={i} className="w-12 h-16 border-2 border-black dark:border-zinc-700 bg-white dark:bg-black relative overflow-hidden group">
+            <div className="absolute inset-0 flex items-center justify-center text-[8px] font-mono text-zinc-300">
+              SLOT_{i}
+            </div>
+            <AnimatePresence>
+              {i < active && (
+                <motion.div
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -50, opacity: 0 }}
+                  className="absolute inset-0 bg-primary-500 border border-black flex items-center justify-center"
+                >
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="w-4 h-4 border-2 border-black border-t-transparent rounded-full"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        ))}
+      </div>
+
+      {/* Full Indicator */}
+      <AnimatePresence>
+        {isFull && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mt-8 px-4 py-2 bg-red-600 border-2 border-black text-white font-mono text-[10px] font-black uppercase tracking-widest animate-pulse"
+          >
+            ALL_SLOTS_OCCUPIED
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Child-friendly label */}
+      <div className="absolute bottom-4 inset-x-8 bg-black text-white p-2 font-mono text-[8px] text-center border border-primary-500">
+        STORY: THINK OF A RESTAURANT WITH 10 TABLES. IT DOESN'T MATTER HOW FAST YOU ARRIVE, 
+        IF ALL 10 TABLES ARE FULL, YOU MUST WAIT UNTIL SOMEONE FINISHES THEIR MEAL!
+      </div>
+    </div>
+  )
+}
+
+

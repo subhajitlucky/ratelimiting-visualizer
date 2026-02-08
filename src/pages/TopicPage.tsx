@@ -6,7 +6,7 @@ import TokenBucket from '../components/TokenBucket'
 import LeakyBucket from '../components/LeakyBucket'
 import SlidingLogVisualizer from '../components/SlidingLogVisualizer'
 import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
-import { BouncerVisual, RestaurantVisual, ClientServerVisual } from '../components/FundamentalVisuals'
+import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
   FixedWindowCounter as FixedWindowAlgorithmType,
@@ -14,6 +14,7 @@ import type {
   LeakyBucket as LeakyBucketAlgorithmType,
   SlidingWindowLog as SlidingWindowLogType,
   SlidingWindowCounter as SlidingWindowCounterType,
+  ConcurrencyLimiter as ConcurrencyLimiterType,
 } from '../lib/algorithms'
 import {
   FixedWindowCounter as FixedWindowAlgorithm,
@@ -21,6 +22,7 @@ import {
   LeakyBucket as LeakyBucketAlgorithm,
   SlidingWindowLog,
   SlidingWindowCounter,
+  ConcurrencyLimiter,
 } from '../lib/algorithms'
 
 interface DemoEvent {
@@ -43,6 +45,7 @@ export default function TopicPage() {
     | LeakyBucketAlgorithmType
     | SlidingWindowLogType
     | SlidingWindowCounterType
+    | ConcurrencyLimiterType
     | null
   >(null)
   const [demoEvents, setDemoEvents] = useState<DemoEvent[]>([])
@@ -69,6 +72,7 @@ export default function TopicPage() {
       | LeakyBucketAlgorithmType
       | SlidingWindowLogType
       | SlidingWindowCounterType
+      | ConcurrencyLimiterType
 
     switch (topic.id) {
       case 'fixed-window':
@@ -85,6 +89,9 @@ export default function TopicPage() {
         break
       case 'sliding-counter':
         newAlgorithm = new SlidingWindowCounter(10, 5000) // 10 requests per 5s
+        break
+      case 'concurrency':
+        newAlgorithm = new ConcurrencyLimiter(10) // 10 concurrent slots
         break
       default:
         newAlgorithm = new FixedWindowAlgorithm(10, 5000)
@@ -146,6 +153,17 @@ export default function TopicPage() {
       setDemoState((algorithmInstance as SlidingWindowLogType).getState(currentTime))
     } else if (topic.id === 'sliding-counter') {
       setDemoState((algorithmInstance as SlidingWindowCounterType).getState(currentTime))
+    } else if (topic.id === 'concurrency') {
+      const result = (algorithmInstance as ConcurrencyLimiterType).getState()
+      setDemoState(result)
+      
+      // Simulate processing time: release after 2-5 seconds
+      if (event.accepted) {
+        setTimeout(() => {
+          (algorithmInstance as ConcurrencyLimiterType).release()
+          setDemoState((algorithmInstance as ConcurrencyLimiterType).getState())
+        }, 2000 + Math.random() * 3000)
+      }
     }
   }
 
@@ -182,6 +200,10 @@ export default function TopicPage() {
         return <RestaurantVisual load={demoEvents.length % 7} />
       case 'client-vs-server':
         return <ClientServerVisual activeRequests={demoEvents.length % 6} limit={5} isServer={demoEvents.length % 12 >= 6} />
+      case 'concurrency': {
+        const cState = demoState as { activeConnections: number; maxConcurrency: number } | null
+        return <ConcurrencyVisual active={cState?.activeConnections || 0} limit={10} />
+      }
       case 'fixed-window': {
         const fwState = demoState as { currentCount: number; windowStart: number } | null
         return (

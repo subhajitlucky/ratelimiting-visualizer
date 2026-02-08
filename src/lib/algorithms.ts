@@ -298,6 +298,37 @@ export class SlidingWindowCounter {
   }
 }
 
+// Concurrency Limiter
+export class ConcurrencyLimiter {
+  private maxConcurrency: number
+  private activeConnections: number = 0
+
+  constructor(maxConcurrency: number) {
+    this.maxConcurrency = maxConcurrency
+  }
+
+  allowRequest(_timestamp?: number): { allowed: boolean; reason?: string } {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    _timestamp; 
+    if (this.activeConnections < this.maxConcurrency) {
+      this.activeConnections++
+      return { allowed: true }
+    }
+    return { allowed: false, reason: 'Max concurrency reached' }
+  }
+
+  release(): void {
+    this.activeConnections = Math.max(0, this.activeConnections - 1)
+  }
+
+  getState(): { activeConnections: number; maxConcurrency: number } {
+    return {
+      activeConnections: this.activeConnections,
+      maxConcurrency: this.maxConcurrency,
+    }
+  }
+}
+
 // Factory function
 export function createAlgorithm(
   type: string,
@@ -314,6 +345,8 @@ export function createAlgorithm(
       return new SlidingWindowLog(config.limit, config.window || 1000)
     case 'sliding-counter':
       return new SlidingWindowCounter(config.limit, config.window || 1000)
+    case 'concurrency':
+      return new ConcurrencyLimiter(config.limit)
     default:
       throw new Error(`Unknown algorithm: ${type}`)
   }

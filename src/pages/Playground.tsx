@@ -6,6 +6,7 @@ import TokenBucketVisual from '../components/TokenBucket'
 import LeakyBucketVisual from '../components/LeakyBucket'
 import SlidingLogVisualizer from '../components/SlidingLogVisualizer'
 import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
+import { ConcurrencyVisual } from '../components/FundamentalVisuals'
 import RequestTimeline from '../components/RequestTimeline'
 import type { RequestEvent } from '../components/RequestTimeline'
 import type {
@@ -14,9 +15,10 @@ import type {
   LeakyBucket,
   SlidingWindowLog,
   SlidingWindowCounter,
+  ConcurrencyLimiter,
 } from '../lib/algorithms'
 
-type AlgorithmType = 'fixed-window' | 'token-bucket' | 'leaky-bucket' | 'sliding-log' | 'sliding-counter'
+type AlgorithmType = 'fixed-window' | 'token-bucket' | 'leaky-bucket' | 'sliding-log' | 'sliding-counter' | 'concurrency'
 
 type AlgorithmInstance =
   | FixedWindowCounter
@@ -24,6 +26,7 @@ type AlgorithmInstance =
   | LeakyBucket
   | SlidingWindowLog
   | SlidingWindowCounter
+  | ConcurrencyLimiter
   | null
 
 type ConfigType = {
@@ -74,6 +77,11 @@ const ALGORITHM_CONFIGS: Record<AlgorithmType, { params: ConfigParam[] }> = {
       { id: 'window', label: 'WINDOW_SIZE_MS', min: 100, max: 10000, default: 5000, step: 100 },
     ],
   },
+  'concurrency': {
+    params: [
+      { id: 'limit', label: 'MAX_CONCURRENT', min: 1, max: 20, default: 5 },
+    ],
+  },
 }
 
 const algorithmOptions: Array<{ value: AlgorithmType; label: string; icon: string }> = [
@@ -82,6 +90,7 @@ const algorithmOptions: Array<{ value: AlgorithmType; label: string; icon: strin
   { value: 'leaky-bucket', label: 'LEAKY_BUCKET', icon: '🕳️' },
   { value: 'sliding-log', label: 'SLIDING_LOG', icon: '📋' },
   { value: 'sliding-counter', label: 'SLIDING_COUNTER', icon: '📊' },
+  { value: 'concurrency', label: 'CONCURRENCY', icon: '🔢' },
 ]
 
 export default function Playground() {
@@ -131,7 +140,14 @@ export default function Playground() {
     }
 
     setEvents((prev) => [...prev, event])
-  }, [algorithm, events.length])
+
+    // Special handling for concurrency: release after random delay
+    if (algorithmType === 'concurrency' && result.allowed) {
+      setTimeout(() => {
+        (algorithm as ConcurrencyLimiter).release()
+      }, 2000 + Math.random() * 3000)
+    }
+  }, [algorithm, algorithmType, events.length])
 
   const toggleSimulation = () => {
     setIsSimulating((prev) => !prev)
@@ -176,6 +192,8 @@ export default function Playground() {
         return (algorithm as SlidingWindowLog).getState(currentTime)
       case 'sliding-counter':
         return (algorithm as SlidingWindowCounter).getState(currentTime)
+      case 'concurrency':
+        return (algorithm as ConcurrencyLimiter).getState()
       default:
         return null
     }
@@ -185,6 +203,10 @@ export default function Playground() {
 
   const renderVisualization = () => {
     switch (algorithmType) {
+      case 'concurrency': {
+        const cState = state as { activeConnections: number; maxConcurrency: number } | null
+        return <ConcurrencyVisual active={cState?.activeConnections || 0} limit={config.limit || 5} />
+      }
       case 'fixed-window': {
         const fwState = state as { currentCount: number; windowStart: number } | null
         return (
