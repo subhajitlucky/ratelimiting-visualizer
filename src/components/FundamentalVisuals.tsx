@@ -93,3 +93,77 @@ export function RestaurantVisual({ load }: { load: number }) {
     </div>
   )
 }
+
+/**
+ * Client vs Server Visualization
+ */
+
+export function ClientServerVisual({ activeRequests, limit, isServer }: { activeRequests: number, limit: number, isServer: boolean }) {
+  const isFull = activeRequests >= limit
+
+  return (
+    <div className="relative aspect-video bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 overflow-hidden flex items-center justify-around p-8">
+      {/* Background Grid */}
+      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#00ff41_1px,transparent_1px)] [background-size:15px_15px]" />
+      
+      {/* The Side Indicator */}
+      <div className="absolute top-4 left-4 font-mono text-[10px] font-black flex gap-2">
+        <span className={!isServer ? "text-primary-500" : "text-zinc-500"}>CLIENT_SIDE</span>
+        <span className="text-zinc-500">vs</span>
+        <span className={isServer ? "text-primary-500" : "text-zinc-500"}>SERVER_SIDE</span>
+      </div>
+
+      {/* Client Device */}
+      <div className="relative w-24 h-40 border-4 border-black dark:border-white bg-white dark:bg-black rounded-lg flex flex-col p-2 gap-1 overflow-hidden">
+        <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full mb-2" />
+        <div className="flex-grow flex flex-col-reverse gap-1">
+          {!isServer && Array.from({ length: activeRequests }).map((_, i) => (
+            <motion.div key={i} layoutId={`req-${i}`} className="h-4 bg-primary-500 border border-black" />
+          ))}
+        </div>
+        {!isServer && isFull && (
+          <div className="absolute inset-0 bg-red-500/80 flex items-center justify-center">
+            <span className="text-[8px] font-black text-white italic text-center">CLIENT_BLOCK</span>
+          </div>
+        )}
+      </div>
+
+      {/* Network Path */}
+      <div className="flex-1 h-1 bg-dashed border-t-4 border-black dark:border-white opacity-20 relative mx-4">
+        {isServer && activeRequests > 0 && (
+          <motion.div 
+            className="absolute top-[-8px] w-4 h-4 bg-primary-500 rounded-full"
+            animate={{ x: [0, 100] }}
+            transition={{ duration: 0.5, repeat: Infinity }}
+          />
+        )}
+      </div>
+
+      {/* Server Tower */}
+      <div className="relative w-24 h-40 border-4 border-black dark:border-white bg-black flex flex-col p-4 gap-2">
+        <div className="flex gap-1">
+          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-green-500" />
+        </div>
+        <div className="flex-grow flex flex-col-reverse gap-1 border-t-2 border-zinc-800 pt-2">
+          {isServer && Array.from({ length: activeRequests }).map((_, i) => (
+            <motion.div key={i} layoutId={`req-s-${i}`} className="h-4 bg-primary-500 border border-black" />
+          ))}
+        </div>
+        {isServer && isFull && (
+          <div className="absolute inset-0 bg-red-600 flex items-center justify-center">
+            <span className="text-[8px] font-black text-white italic text-center">429_TOO_MANY_REQUESTS</span>
+          </div>
+        )}
+      </div>
+
+      {/* Label for 5-year old */}
+      <div className="absolute bottom-4 inset-x-8 bg-black text-white p-2 font-mono text-[8px] text-center border border-primary-500">
+        {!isServer 
+          ? "CLIENT: YOUR PHONE STOPS YOU BEFORE THE MESSAGE LEAVES!" 
+          : "SERVER: THE GIANT COMPUTER WAITS UNTIL THE MESSAGE ARRIVES, THEN SAYS NO!"}
+      </div>
+    </div>
+  )
+}
+

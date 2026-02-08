@@ -6,7 +6,7 @@ import TokenBucket from '../components/TokenBucket'
 import LeakyBucket from '../components/LeakyBucket'
 import SlidingLogVisualizer from '../components/SlidingLogVisualizer'
 import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
-import { BouncerVisual, RestaurantVisual } from '../components/FundamentalVisuals'
+import { BouncerVisual, RestaurantVisual, ClientServerVisual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
   FixedWindowCounter as FixedWindowAlgorithmType,
@@ -180,6 +180,8 @@ export default function TopicPage() {
         return <BouncerVisual activeRequests={demoEvents.length % 6} limit={5} />
       case 'why-rate-limiting':
         return <RestaurantVisual load={demoEvents.length % 7} />
+      case 'client-vs-server':
+        return <ClientServerVisual activeRequests={demoEvents.length % 6} limit={5} isServer={demoEvents.length % 12 >= 6} />
       case 'fixed-window': {
         const fwState = demoState as { currentCount: number; windowStart: number } | null
         return (
