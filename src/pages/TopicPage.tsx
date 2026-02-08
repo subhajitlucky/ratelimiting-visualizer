@@ -1,11 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { TopicData, type TopicInfo } from '../data/topics'
 import FixedWindowCounter from '../components/FixedWindowCounter'
 import TokenBucket from '../components/TokenBucket'
 import LeakyBucket from '../components/LeakyBucket'
 import SlidingLogVisualizer from '../components/SlidingLogVisualizer'
 import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
+import { BouncerVisual, RestaurantVisual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
   FixedWindowCounter as FixedWindowAlgorithmType,
@@ -175,6 +176,10 @@ export default function TopicPage() {
   // Render content based on topic
   const renderAlgorithmDemo = () => {
     switch (topic.id) {
+      case 'what-is-rate-limiting':
+        return <BouncerVisual activeRequests={demoEvents.length % 6} limit={5} />
+      case 'why-rate-limiting':
+        return <RestaurantVisual load={demoEvents.length % 7} />
       case 'fixed-window': {
         const fwState = demoState as { currentCount: number; windowStart: number } | null
         return (
@@ -250,455 +255,225 @@ export default function TopicPage() {
   const nextTopic = currentIndex < allTopics.length - 1 ? allTopics[currentIndex + 1] : null
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 py-8">
       {/* Breadcrumb */}
-      <nav className="text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
+      <nav className="font-mono text-[10px] uppercase tracking-widest text-zinc-500" aria-label="Breadcrumb">
         <ol className="flex space-x-2">
           <li>
-            <Link to="/learn" className="hover:text-primary-600 dark:hover:text-primary-400">
-              Learning Path
+            <Link to="/learn" className="hover:text-primary-500 transition-colors">
+              LEARNING_PATH
             </Link>
           </li>
-          <li>/</li>
-          <li className="text-gray-900 dark:text-white">{topic.title}</li>
+          <li className="text-zinc-300">/</li>
+          <li className="text-zinc-900 dark:text-white font-black italic">{topic.id.toUpperCase()}</li>
         </ol>
       </nav>
 
       {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="relative"
       >
-        <div className="flex flex-col sm:flex-row items-start gap-4 mb-6">
-          <div className="text-6xl mx-auto sm:mx-0">{topic.icon}</div>
+        <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 mb-8 border-b-4 border-black dark:border-white pb-8">
+          <div className="text-8xl grayscale hover:grayscale-0 transition-all duration-500">{topic.icon}</div>
           <div className="flex-1 text-center sm:text-left">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            <div className="text-[10px] font-mono text-primary-500 font-black mb-2 uppercase tracking-[0.2em]">PROTOCOL_MODULE_v2.0</div>
+            <h1 className="text-5xl sm:text-7xl font-black text-zinc-900 dark:text-white uppercase italic leading-none tracking-tighter">
               {topic.title}
             </h1>
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300">
-              {topic.description}
-            </p>
           </div>
-          <div className="w-full sm:w-auto flex justify-center sm:block">
-            <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${
-              topic.level === 'beginner' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700' :
-              topic.level === 'intermediate' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700' :
-              'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700'
+          <div className="w-full sm:w-auto">
+            <span className={`px-4 py-2 border-2 font-mono text-xs font-black uppercase tracking-widest ${
+              topic.level === 'beginner' ? 'border-primary-500 text-primary-500' :
+              topic.level === 'intermediate' ? 'border-yellow-500 text-yellow-500' :
+              'border-red-500 text-red-500'
             }`}>
-              {topic.level}
+              LVL_{topic.level.toUpperCase()}
             </span>
           </div>
         </div>
       </motion.div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
-        <nav className="flex -mb-px space-x-4 sm:space-x-8 overflow-x-auto" aria-label="Tabs">
-          <button
-            onClick={() => setActiveTab('theory')}
-            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'theory'
-                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-            }`}
-          >
-            Theory & Examples
-          </button>
-          <button
-            onClick={() => setActiveTab('demo')}
-            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'demo'
-                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-            }`}
-          >
-            Interactive Demo
-          </button>
+      <div className="border-b-2 border-zinc-100 dark:border-zinc-800">
+        <nav className="flex space-x-8" aria-label="Tabs">
+          {(['theory', 'demo'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`pb-4 px-1 font-mono text-xs font-black uppercase tracking-widest transition-all relative ${
+                activeTab === tab
+                  ? 'text-primary-500'
+                  : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200'
+              }`}
+            >
+              {tab}_MANIFEST
+              {activeTab === tab && (
+                <motion.div layoutId="tab-underline" className="absolute bottom-[-2px] left-0 right-0 h-1 bg-primary-500" />
+              )}
+            </button>
+          ))}
         </nav>
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'theory' ? (
-        <motion.div
-          key="theory"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-8"
-        >
-          {/* Analogy */}
-          <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-6 border border-primary-100 dark:border-primary-800">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-              Real-World Analogy
-            </h3>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed italic">
-              {topic.content.analogy}
-            </p>
-          </div>
-
-          {/* How It Works */}
-          <section>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              How It Works
-            </h3>
-            <div className="prose dark:prose-invert max-w-none">
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                {topic.content.howItWorks}
+      <AnimatePresence mode="wait">
+        {activeTab === 'theory' ? (
+          <motion.div
+            key="theory"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-12"
+          >
+            {/* Analogy - Brutalist Card */}
+            <div className="bg-black text-white p-8 border-l-8 border-primary-500 shadow-[8px_8px_0px_0px_rgba(0,255,65,0.1)]">
+              <h3 className="font-mono text-[10px] text-primary-500 font-black mb-4 uppercase tracking-widest">
+                CORE_METAPHOR
+              </h3>
+              <p className="text-xl italic font-display leading-tight">
+                "{topic.content.analogy}"
               </p>
             </div>
-          </section>
 
-          {/* Use Cases */}
-          <section>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Use Cases
-            </h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {topic.content.useCases.map((useCase, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary-600 dark:text-primary-400 text-sm">
-                      {index + 1}
-                    </span>
+            <div className="grid lg:grid-cols-3 gap-12">
+              <div className="lg:col-span-2 space-y-12">
+                {/* How It Works */}
+                <section className="space-y-4">
+                  <h3 className="text-3xl font-black italic uppercase">THE_MECHANICS</h3>
+                  <p className="font-mono text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed border-l-2 border-zinc-200 dark:border-zinc-800 pl-6">
+                    {topic.content.howItWorks}
+                  </p>
+                </section>
+
+                {/* Use Cases */}
+                <section className="space-y-6">
+                  <h3 className="text-3xl font-black italic uppercase">IMPLEMENTATION_TARGETS</h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {topic.content.useCases.map((useCase, index) => (
+                      <div key={index} className="p-4 bg-zinc-50 dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 font-mono text-xs">
+                        <span className="text-primary-500 mr-2">[{index.toString().padStart(2, '0')}]</span>
+                        {useCase}
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">{useCase}</p>
-                </motion.div>
-              ))}
-            </div>
-          </section>
+                </section>
+              </div>
 
-          {/* Pros and Cons */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <section>
-              <h3 className="text-xl font-bold text-green-600 dark:text-green-400 mb-4">
-                Pros
-              </h3>
-              <ul className="space-y-3">
-                {Array.isArray(topic.content.pros)
-                  ? topic.content.pros.map((pro: string, index: number) => (
-                      <li
-                        key={index}
-                        className="flex items-start gap-3 text-gray-700 dark:text-gray-300"
-                      >
-                        <svg
-                          className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        {pro}
+              {/* Sidebar: Pros/Cons */}
+              <div className="space-y-8 bg-zinc-50 dark:bg-zinc-900/50 p-8 border-2 border-zinc-100 dark:border-zinc-800">
+                <section className="space-y-4">
+                  <h3 className="font-mono text-[10px] text-green-500 font-black uppercase tracking-widest border-b border-green-500/20 pb-2">ADVANTAGES</h3>
+                  <ul className="space-y-3 font-mono text-[10px] uppercase">
+                    {(Array.isArray(topic.content.pros) ? topic.content.pros : []).map((pro: string, i: number) => (
+                      <li key={i} className="flex gap-2">
+                        <span className="text-green-500">+</span> {pro}
                       </li>
-                    ))
-                  : Object.entries(topic.content.pros as Record<string, string[]>).flatMap(
-                      ([key, items]: [string, string[]]) =>
-                        items.map((item: string, idx: number) => (
-                          <li
-                            key={`${key}-${idx}`}
-                            className="flex items-start gap-3 text-gray-700 dark:text-gray-300"
-                          >
-                            <svg
-                              className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="font-medium text-green-700 dark:text-green-300">
-                              {key}:
-                            </span>
-                            {item}
-                          </li>
-                        ))
-                    )}
-              </ul>
-            </section>
-
-            <section>
-              <h3 className="text-xl font-bold text-red-600 dark:text-red-400 mb-4">
-                Cons
-              </h3>
-              <ul className="space-y-3">
-                {Array.isArray(topic.content.cons)
-                  ? topic.content.cons.map((con: string, index: number) => (
-                      <li
-                        key={index}
-                        className="flex items-start gap-3 text-gray-700 dark:text-gray-300"
-                      >
-                        <svg
-                          className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                        {con}
+                    ))}
+                  </ul>
+                </section>
+                <section className="space-y-4">
+                  <h3 className="font-mono text-[10px] text-red-500 font-black uppercase tracking-widest border-b border-red-500/20 pb-2">CONSTRAINTS</h3>
+                  <ul className="space-y-3 font-mono text-[10px] uppercase">
+                    {(Array.isArray(topic.content.cons) ? topic.content.cons : []).map((con: string, i: number) => (
+                      <li key={i} className="flex gap-2">
+                        <span className="text-red-500">-</span> {con}
                       </li>
-                    ))
-                  : Object.entries(topic.content.cons as Record<string, string[]>).flatMap(
-                      ([key, items]: [string, string[]]) =>
-                        items.map((item: string, idx: number) => (
-                          <li
-                            key={`${key}-${idx}`}
-                            className="flex items-start gap-3 text-gray-700 dark:text-gray-300"
-                          >
-                            <svg
-                              className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
-                            <span className="font-medium text-red-700 dark:text-red-300">
-                              {key}:
-                            </span>
-                            {item}
-                          </li>
-                        ))
-                    )}
-              </ul>
-            </section>
-          </div>
-        </motion.div>
-      ) : (
-        <motion.div
-          key="demo"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-8"
-        >
-          {/* Demo Controls */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Interactive Simulation
-            </h3>
-
-            <div className="flex flex-wrap gap-4 mb-6">
-              <button
-                onClick={handleGenerateRequest}
-                disabled={isPlaying}
-                className="px-6 py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white rounded-lg font-medium transition-colors"
-              >
-                Generate Request
-              </button>
-              <button
-                onClick={handleAutoGenerate}
-                className={`px-6 py-3 ${
-                  isPlaying
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-green-600 hover:bg-green-700'
-                } text-white rounded-lg font-medium transition-colors`}
-              >
-                {isPlaying ? 'Stop' : 'Auto Generate (5s)'}
-              </button>
-              <button
-                onClick={handleReset}
-                className="px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-medium transition-colors"
-              >
-                Reset
-              </button>
+                    ))}
+                  </ul>
+                </section>
+              </div>
             </div>
-
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              <p>
-                <strong>Requests generated:</strong> {demoEvents.length}
-              </p>
-              <p>
-                <strong>Accepted:</strong>{' '}
-                {demoEvents.filter((e) => e.accepted).length}
-              </p>
-              <p>
-                <strong>Rejected:</strong>{' '}
-                {demoEvents.filter((e) => !e.accepted).length}
-              </p>
-            </div>
-          </div>
-
-          {/* Visualization */}
-          <div className="grid lg:grid-cols-2 gap-6">
-            <div>{renderAlgorithmDemo()}</div>
-
-            {/* Timeline of events */}
-            {demoEvents.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Recent Requests
-                </h4>
-                <div className="space-y-2 max-h-80 overflow-y-auto">
-                  {demoEvents.slice(-20).reverse().map((event) => (
-                    <div
-                      key={event.id}
-                      className={`p-3 rounded-lg border ${
-                        event.accepted
-                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                          : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="font-mono text-sm">
-                          Request #{event.id}
-                        </span>
-                        <span className="text-xs">
-                          {event.timestamp}ms
-                        </span>
-                      </div>
-                      <div
-                        className={`text-sm font-medium ${
-                          event.accepted
-                            ? 'text-green-700 dark:text-green-300'
-                            : 'text-red-700 dark:text-red-300'
-                        }`}
-                      >
-                        {event.accepted ? '✓ Accepted' : '✗ Rejected'}
-                        {event.reason && ` - ${event.reason}`}
-                      </div>
-                    </div>
-                  ))}
+          </motion.div>
+        ) : (
+          <motion.div
+            key="demo"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-8"
+          >
+            {/* Visualizer Container */}
+            <div className="grid lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-8">
+                <div className="tech-container border-2 border-black dark:border-zinc-800 p-8 bg-white dark:bg-zinc-950">
+                  {renderAlgorithmDemo()}
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Explanation */}
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-              How to Use This Demo
-            </h4>
-            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li>• Click "Generate Request" to simulate individual requests one at a time</li>
-              <li>• Click "Auto Generate" to simulate traffic for a few seconds</li>
-              <li>• Watch the visualization update to see how the algorithm handles each request</li>
-              <li>• Observe when requests are accepted vs rejected based on the current state</li>
-            </ul>
-          </div>
-        </motion.div>
-      )}
+              {/* Controls Panel */}
+              <div className="space-y-6">
+                <div className="bg-black text-white p-6 border-t-4 border-primary-500 font-mono">
+                  <h3 className="text-xs font-black text-primary-500 mb-6 uppercase tracking-widest">CONSOLE_CONTROLS</h3>
+                  <div className="space-y-4">
+                    <button
+                      onClick={handleGenerateRequest}
+                      disabled={isPlaying}
+                      className="w-full py-4 bg-primary-500 text-black font-black text-xs uppercase tracking-widest border-2 border-primary-500 hover:bg-primary-400 disabled:opacity-50"
+                    >
+                      EXEC_SINGLE_REQ
+                    </button>
+                    <button
+                      onClick={handleAutoGenerate}
+                      className={`w-full py-4 border-2 font-black text-xs uppercase tracking-widest transition-all ${
+                        isPlaying ? 'bg-red-500 border-red-500 text-white' : 'bg-transparent border-white text-white hover:bg-white hover:text-black'
+                      }`}
+                    >
+                      {isPlaying ? 'ABORT_AUTO' : 'INIT_AUTO_STREAM'}
+                    </button>
+                    <button
+                      onClick={handleReset}
+                      className="w-full py-4 bg-zinc-800 border-2 border-zinc-700 text-zinc-400 font-black text-xs uppercase tracking-widest hover:text-white"
+                    >
+                      HARD_RESET
+                    </button>
+                  </div>
+                </div>
 
-      {/* Pagination Navigation */}
-      <div className="grid grid-cols-2 gap-4 pt-8 border-t border-gray-200 dark:border-gray-700">
-        {prevTopic ? (
-          <Link
-            to={`/topic/${prevTopic.id}`}
-            className="group flex flex-col p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all text-left"
-          >
-            <span className="text-sm text-gray-500 dark:text-gray-400 mb-1 flex items-center">
-              <svg className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Previous Topic
-            </span>
-            <span className="font-semibold text-gray-900 dark:text-white truncate">
-              {prevTopic.title}
-            </span>
-          </Link>
-        ) : (
-          <div />
+                {/* Live Logs */}
+                <div className="border-2 border-black dark:border-zinc-800 h-[200px] overflow-y-auto font-mono text-[10px] p-4 bg-zinc-50 dark:bg-zinc-900">
+                  <div className="text-zinc-500 mb-2 uppercase font-black tracking-widest">LIVE_LOGS:</div>
+                  <div className="space-y-1">
+                    {demoEvents.slice(-20).reverse().map((event) => (
+                      <div key={event.id} className={event.accepted ? 'text-primary-500' : 'text-red-500'}>
+                        [{event.timestamp}ms] {event.accepted ? 'PASS' : 'FAIL'} _ID:{event.id}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* Navigation */}
+      <div className="grid grid-cols-2 gap-4 pt-12 border-t-2 border-black dark:border-white">
+        {prevTopic ? (
+          <Link to={`/topic/${prevTopic.id}`} className="group p-6 border-2 border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-white transition-all">
+            <div className="font-mono text-[10px] text-zinc-400 uppercase mb-2">PREV_MODULE</div>
+            <div className="text-xl font-black italic uppercase italic group-hover:text-primary-500 transition-colors">
+              {prevTopic.title}
+            </div>
+          </Link>
+        ) : <div/>}
 
         {nextTopic ? (
-          <Link
-            to={`/topic/${nextTopic.id}`}
-            className="group flex flex-col p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all text-right"
-          >
-            <span className="text-sm text-gray-500 dark:text-gray-400 mb-1 flex items-center justify-end">
-              Next Topic
-              <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </span>
-            <span className="font-semibold text-gray-900 dark:text-white truncate">
+          <Link to={`/topic/${nextTopic.id}`} className="group p-6 border-2 border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-white transition-all text-right">
+            <div className="font-mono text-[10px] text-zinc-400 uppercase mb-2">NEXT_MODULE</div>
+            <div className="text-xl font-black italic uppercase italic group-hover:text-primary-500 transition-colors">
               {nextTopic.title}
-            </span>
+            </div>
           </Link>
         ) : (
-          <Link
-            to="/playground"
-            className="group flex flex-col p-4 rounded-xl border border-primary-500 bg-primary-50 dark:bg-primary-900/10 text-right"
-          >
-            <span className="text-sm text-primary-600 dark:text-primary-400 mb-1 flex items-center justify-end">
-              Ready to Practice?
-              <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7" />
-              </svg>
-            </span>
-            <span className="font-semibold text-gray-900 dark:text-white">
-              Open Playground
-            </span>
+          <Link to="/playground" className="group p-6 bg-primary-500 border-2 border-black transition-all text-right">
+            <div className="font-mono text-[10px] text-black/50 uppercase mb-2">FINAL_STATION</div>
+            <div className="text-xl font-black italic uppercase italic text-black">
+              PLAYGROUND_v2.0
+            </div>
           </Link>
         )}
-      </div>
-
-      {/* Navigation Footer */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm font-medium">
-        <Link
-          to="/learn"
-          className="text-primary-600 dark:text-primary-400 hover:underline flex items-center"
-        >
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Back to Learning Path
-        </Link>
-        <Link
-          to="/playground"
-          className="text-primary-600 dark:text-primary-400 hover:underline flex items-center"
-        >
-          Open Playground
-          <svg
-            className="w-5 h-5 ml-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </Link>
       </div>
     </div>
   )
