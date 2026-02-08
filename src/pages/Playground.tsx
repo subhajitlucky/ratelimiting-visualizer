@@ -97,9 +97,8 @@ export default function Playground() {
   const [events, setEvents] = useState<RequestEvent[]>([])
   const [currentTime, setCurrentTime] = useState(0)
   const [isSimulating, setIsSimulating] = useState(false)
-  const [simulationSpeed, setSimulationSpeed] = useState(100)
+  const [simulationSpeed] = useState(100)
   const [requestRate, setRequestRate] = useState(300)
-  const [requestProgress, setRequestProgress] = useState(0)
   const lastRequestTimeRef = useRef(0)
 
   const resetSimulationState = useCallback(() => {
@@ -112,7 +111,8 @@ export default function Playground() {
 
   useEffect(() => {
     resetSimulationState()
-  }, [resetSimulationState])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [algorithmType, config])
 
   const handleConfigChange = (paramId: keyof ConfigType, value: number) => {
     setConfig((prev) => ({ ...prev, [paramId]: value }))
@@ -149,7 +149,6 @@ export default function Playground() {
       setCurrentTime((prev) => {
         const newTime = prev + simulationSpeed
         const timeSinceLastRequest = newTime - lastRequestTimeRef.current
-        setRequestProgress((prev) => (prev + timeSinceLastRequest) % requestRate)
 
         if (timeSinceLastRequest >= requestRate) {
           generateRequest(newTime)

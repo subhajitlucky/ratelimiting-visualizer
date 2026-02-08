@@ -42,6 +42,7 @@ export default function LearningPath() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             className="space-y-8"
+            transition={{ delay: categoryIndex * 0.1 }}
           >
             <div className="flex items-center gap-6">
               <h2 className="text-3xl font-black uppercase italic whitespace-nowrap">
