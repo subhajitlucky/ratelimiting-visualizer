@@ -232,4 +232,76 @@ export function ConcurrencyVisual({ active, limit }: { active: number, limit: nu
   )
 }
 
+/**
+ * HTTP 429 Visualization
+ */
+
+export function HTTP429Visual({ activeRequests, limit }: { activeRequests: number, limit: number }) {
+  const isFull = activeRequests >= limit
+
+  return (
+    <div className="relative aspect-video bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 overflow-hidden flex flex-col items-center justify-center p-12">
+      {/* Dynamic Scanline Background */}
+      <div className="absolute inset-0 pointer-events-none opacity-5 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,#00ff41_3px,transparent_3px)] [background-size:100%_4px]" />
+
+      <div className="relative z-10 flex flex-col items-center gap-8">
+        {/* The Response Header Card */}
+        <motion.div 
+          className="bg-white dark:bg-black border-2 border-black dark:border-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] w-64 relative overflow-hidden"
+          animate={isFull ? { 
+            scale: [1, 1.05, 1],
+            borderColor: ['#000', '#ef4444', '#000'] 
+          } : {}}
+          transition={{ duration: 0.5, repeat: isFull ? Infinity : 0 }}
+        >
+          <div className="flex justify-between items-center mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+            <span className="font-mono text-[8px] text-zinc-400 uppercase font-black">HTTP_RESPONSE</span>
+            <div className={`w-2 h-2 rounded-full ${isFull ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`} />
+          </div>
+          
+          <div className="space-y-2">
+            <div className={`text-2xl font-black italic ${isFull ? 'text-red-600 dark:text-red-400' : 'text-primary-600'}`}>
+              {isFull ? '429' : '200'}
+            </div>
+            <div className="font-mono text-[10px] font-black uppercase tracking-tighter text-zinc-500">
+              {isFull ? 'TOO_MANY_REQUESTS' : 'OK_SUCCESS'}
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {isFull && (
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="mt-4 pt-2 border-t border-red-500/20"
+              >
+                <div className="font-mono text-[8px] text-red-500 font-bold italic">
+                  Retry-After: 30s
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* The Traffic Light */}
+        <div className="flex gap-4">
+          <div className={`w-12 h-12 border-2 border-black flex items-center justify-center ${!isFull ? 'bg-primary-500 shadow-[0_0_15px_rgba(0,255,65,0.5)]' : 'bg-zinc-200 dark:bg-zinc-800'}`}>
+            <span className="text-xs font-black text-black italic">GO</span>
+          </div>
+          <div className={`w-12 h-12 border-2 border-black flex items-center justify-center ${isFull ? 'bg-red-600 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'bg-zinc-200 dark:bg-zinc-800'}`}>
+            <span className="text-xs font-black text-white italic">STOP</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Child-friendly label */}
+      <div className="absolute bottom-4 inset-x-8 bg-black text-white p-2 font-mono text-[8px] text-center border border-primary-500">
+        STORY: 429 IS THE INTERNET'S "STOP SIGN." WHEN YOU ASK FOR TOO MANY TOYS TOO FAST, 
+         THE COMPUTER SHOWS YOU THIS SIGN AND TELLS YOU TO GO PLAY OUTSIDE FOR A FEW MINUTES!
+      </div>
+    </div>
+  )
+}
+
+
 

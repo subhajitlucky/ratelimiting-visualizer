@@ -6,7 +6,7 @@ import TokenBucket from '../components/TokenBucket'
 import LeakyBucket from '../components/LeakyBucket'
 import SlidingLogVisualizer from '../components/SlidingLogVisualizer'
 import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
-import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual } from '../components/FundamentalVisuals'
+import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual, HTTP429Visual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
   FixedWindowCounter as FixedWindowAlgorithmType,
@@ -200,6 +200,8 @@ export default function TopicPage() {
         return <RestaurantVisual load={demoEvents.length % 7} />
       case 'client-vs-server':
         return <ClientServerVisual activeRequests={demoEvents.length % 6} limit={5} isServer={demoEvents.length % 12 >= 6} />
+      case 'http-429':
+        return <HTTP429Visual activeRequests={demoEvents.length % 6} limit={5} />
       case 'concurrency': {
         const cState = demoState as { activeConnections: number; maxConcurrency: number } | null
         return <ConcurrencyVisual active={cState?.activeConnections || 0} limit={10} />
