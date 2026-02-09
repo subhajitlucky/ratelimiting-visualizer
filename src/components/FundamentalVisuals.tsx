@@ -396,6 +396,94 @@ export function RetryAfterVisual({ activeRequests, limit }: { activeRequests: nu
   )
 }
 
+/**
+ * Rate Limit Headers Visualization
+ */
+
+export function RateLimitHeadersVisual({ 
+  limit, 
+  remaining, 
+  resetIn,
+  lastRequestAccepted 
+}: { 
+  limit: number, 
+  remaining: number, 
+  resetIn: number,
+  lastRequestAccepted: boolean | null
+}) {
+  return (
+    <div className="relative aspect-video bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 overflow-hidden flex flex-col items-center justify-center p-8">
+      {/* Background Grid */}
+      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#00ff41_1px,transparent_1px)] [background-size:25px_25px]" />
+
+      <div className="relative z-10 w-full max-w-md space-y-6">
+        {/* Terminal Header */}
+        <div className="bg-black text-white p-4 border-2 border-primary-500 shadow-[4px_4px_0px_0px_rgba(0,255,65,0.2)] font-mono">
+          <div className="flex items-center gap-2 mb-4 border-b border-zinc-800 pb-2">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            <div className="w-2 h-2 rounded-full bg-yellow-500" />
+            <div className="w-2 h-2 rounded-full bg-green-500" />
+            <span className="text-[8px] text-zinc-500 ml-2">HTTP_INSPECTOR_v1.0</span>
+          </div>
+
+          <div className="space-y-2 text-[10px]">
+            <div className="flex justify-between border-b border-zinc-900 py-1 group hover:bg-zinc-900 transition-colors">
+              <span className="text-zinc-400 uppercase">HTTP/1.1</span>
+              <span className={lastRequestAccepted === false ? "text-red-500 font-black" : "text-primary-500 font-black"}>
+                {lastRequestAccepted === false ? "429 TOO MANY REQUESTS" : "200 OK"}
+              </span>
+            </div>
+            
+            <div className="flex justify-between py-1 group hover:bg-zinc-900 transition-colors">
+              <span className="text-zinc-500 italic">X-RateLimit-Limit:</span>
+              <span className="text-white font-bold">{limit}</span>
+            </div>
+
+            <motion.div 
+              key={remaining}
+              initial={{ backgroundColor: "rgba(0, 255, 65, 0.2)" }}
+              animate={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
+              className="flex justify-between py-1 group hover:bg-zinc-900 transition-colors"
+            >
+              <span className="text-zinc-500 italic">X-RateLimit-Remaining:</span>
+              <span className={`font-bold ${remaining === 0 ? 'text-red-500' : 'text-primary-500'}`}>
+                {remaining}
+              </span>
+            </motion.div>
+
+            <div className="flex justify-between py-1 group hover:bg-zinc-900 transition-colors">
+              <span className="text-zinc-500 italic">X-RateLimit-Reset:</span>
+              <span className="text-yellow-500 font-bold">{resetIn}s</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="space-y-2">
+          <div className="flex justify-between font-mono text-[8px] font-black uppercase">
+            <span className="text-zinc-500">Quota_Usage</span>
+            <span className="text-primary-500">{Math.round((remaining / limit) * 100)}% Available</span>
+          </div>
+          <div className="h-4 w-full bg-zinc-200 dark:bg-zinc-800 border-2 border-black overflow-hidden relative">
+            <motion.div 
+              className={`h-full border-r-2 border-black ${remaining === 0 ? 'bg-red-500' : 'bg-primary-500'}`}
+              initial={{ width: "100%" }}
+              animate={{ width: `${(remaining / limit) * 100}%` }}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Story Label */}
+      <div className="absolute bottom-4 inset-x-8 bg-black text-white p-2 font-mono text-[8px] text-center border border-primary-500">
+        STORY: IMAGINE THE SERVER SENDING A LITTLE NOTE WITH EVERY RESPONSE THAT SAYS: 
+        "YOU'VE USED {limit - remaining} OUT OF {limit} TICKETS, AND I'LL GIVE YOU NEW ONES IN {resetIn} SECONDS!"
+      </div>
+    </div>
+  )
+}
+
 
 
 

@@ -6,7 +6,7 @@ import TokenBucket from '../components/TokenBucket'
 import LeakyBucket from '../components/LeakyBucket'
 import SlidingLogVisualizer from '../components/SlidingLogVisualizer'
 import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
-import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual, HTTP429Visual, RetryAfterVisual } from '../components/FundamentalVisuals'
+import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual, HTTP429Visual, RetryAfterVisual, RateLimitHeadersVisual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
   FixedWindowCounter as FixedWindowAlgorithmType,
@@ -93,6 +93,9 @@ export default function TopicPage() {
       case 'concurrency':
         newAlgorithm = new ConcurrencyLimiter(10) // 10 concurrent slots
         break
+      case 'rate-limit-headers':
+        newAlgorithm = new FixedWindowAlgorithm(10, 30000) // 10 requests per 30s
+        break
       default:
         newAlgorithm = new FixedWindowAlgorithm(10, 5000)
     }
@@ -153,6 +156,8 @@ export default function TopicPage() {
       setDemoState((algorithmInstance as SlidingWindowLogType).getState(currentTime))
     } else if (topic.id === 'sliding-counter') {
       setDemoState((algorithmInstance as SlidingWindowCounterType).getState(currentTime))
+    } else if (topic.id === 'rate-limit-headers') {
+      setDemoState((algorithmInstance as FixedWindowAlgorithmType).getState(currentTime))
     } else if (topic.id === 'concurrency') {
       const result = (algorithmInstance as ConcurrencyLimiterType).getState()
       setDemoState(result)
@@ -204,6 +209,22 @@ export default function TopicPage() {
         return <HTTP429Visual activeRequests={demoEvents.length % 6} limit={5} />
       case 'retry-after':
         return <RetryAfterVisual activeRequests={demoEvents.length % 6} limit={5} />
+      case 'rate-limit-headers': {
+        const fwState = demoState as { currentCount: number; windowStart: number; windowEnd: number } | null
+        const lastEvent = demoEvents[demoEvents.length - 1]
+        const limit = 10
+        const remaining = Math.max(0, limit - (fwState?.currentCount || 0))
+        const resetIn = fwState ? Math.ceil((fwState.windowEnd - demoTime) / 1000) : 30
+        
+        return (
+          <RateLimitHeadersVisual 
+            limit={limit}
+            remaining={remaining}
+            resetIn={resetIn > 0 ? resetIn : 0}
+            lastRequestAccepted={lastEvent ? lastEvent.accepted : null}
+          />
+        )
+      }
       case 'concurrency': {
         const cState = demoState as { activeConnections: number; maxConcurrency: number } | null
         return <ConcurrencyVisual active={cState?.activeConnections || 0} limit={10} />
