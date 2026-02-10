@@ -6,6 +6,7 @@ import TokenBucket from '../components/TokenBucket'
 import LeakyBucket from '../components/LeakyBucket'
 import SlidingLogVisualizer from '../components/SlidingLogVisualizer'
 import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
+import RateLimitHeaders from '../components/RateLimitHeaders'
 import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual, HTTP429Visual, RetryAfterVisual, RateLimitHeadersVisual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
@@ -96,6 +97,9 @@ export default function TopicPage() {
       case 'rate-limit-headers':
         newAlgorithm = new FixedWindowAlgorithm(10, 30000) // 10 requests per 30s
         break
+      case 'burst-traffic':
+        newAlgorithm = new TokenBucketAlgorithm(10, 1) // 10 capacity, 1 token/sec (slow refill for burst demo)
+        break
       default:
         newAlgorithm = new FixedWindowAlgorithm(10, 5000)
     }
@@ -158,6 +162,8 @@ export default function TopicPage() {
       setDemoState((algorithmInstance as SlidingWindowCounterType).getState(currentTime))
     } else if (topic.id === 'rate-limit-headers') {
       setDemoState((algorithmInstance as FixedWindowAlgorithmType).getState(currentTime))
+    } else if (topic.id === 'burst-traffic') {
+      setDemoState((algorithmInstance as TokenBucketAlgorithmType).getState())
     } else if (topic.id === 'concurrency') {
       const result = (algorithmInstance as ConcurrencyLimiterType).getState()
       setDemoState(result)
@@ -217,11 +223,12 @@ export default function TopicPage() {
         const resetIn = fwState ? Math.ceil((fwState.windowEnd - demoTime) / 1000) : 30
         
         return (
-          <RateLimitHeadersVisual 
+          <RateLimitHeaders 
             limit={limit}
             remaining={remaining}
             resetIn={resetIn > 0 ? resetIn : 0}
             lastRequestAccepted={lastEvent ? lastEvent.accepted : null}
+            currentTime={demoTime}
           />
         )
       }
