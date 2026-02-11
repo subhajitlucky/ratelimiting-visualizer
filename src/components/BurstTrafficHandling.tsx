@@ -15,13 +15,18 @@ export default function BurstTrafficHandling({
 }: BurstTrafficHandlingProps) {
   const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([])
 
-  // Create a ripple effect when tokens are consumed (simulating a burst hitting the system)
+  // Track token changes to trigger ripples without immediate re-render warning
+  const tokensDecreased = tokens < capacity; // Simple heuristic for burst hitting
+
   useEffect(() => {
-    if (tokens < capacity) {
-      const newRipple = { id: Date.now(), x: Math.random() * 100, y: Math.random() * 100 }
-      setRipples((prev) => [...prev, newRipple].slice(-5))
+    if (tokensDecreased) {
+      const timeoutId = setTimeout(() => {
+        const newRipple = { id: Date.now(), x: Math.random() * 100, y: Math.random() * 100 }
+        setRipples((prev) => [...prev, newRipple].slice(-5))
+      }, 0)
+      return () => clearTimeout(timeoutId)
     }
-  }, [tokens, capacity])
+  }, [tokensDecreased])
 
   const fillPercentage = (tokens / capacity) * 100
 
