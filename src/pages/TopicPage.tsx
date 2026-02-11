@@ -270,17 +270,6 @@ export default function TopicPage() {
           />
         )
       }
-      case 'burst-traffic': {
-        const tbState = demoState as { tokens: number; capacity: number; refillRate: number } | null
-        return (
-          <BurstTrafficHandling
-            tokens={tbState?.tokens || 10}
-            capacity={tbState?.capacity || 10}
-            refillRate={tbState?.refillRate || 1}
-            currentTime={demoTime}
-          />
-        )
-      }
       case 'leaky-bucket': {
         const lbState = demoState as { waterLevel: number; capacity: number; leakRate: number } | null
         return (
