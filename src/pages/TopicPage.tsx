@@ -7,7 +7,8 @@ import LeakyBucket from '../components/LeakyBucket'
 import SlidingLogVisualizer from '../components/SlidingLogVisualizer'
 import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
 import RateLimitHeaders from '../components/RateLimitHeaders'
-import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual, HTTP429Visual, RetryAfterVisual, RateLimitHeadersVisual } from '../components/FundamentalVisuals'
+import BurstTrafficHandling from '../components/BurstTrafficHandling'
+import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual, HTTP429Visual, RetryAfterVisual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
   FixedWindowCounter as FixedWindowAlgorithmType,
@@ -255,6 +256,28 @@ export default function TopicPage() {
             tokens={tbState?.tokens || 10}
             capacity={tbState?.capacity || 10}
             refillRate={tbState?.refillRate || 2}
+          />
+        )
+      }
+      case 'burst-traffic': {
+        const tbState = demoState as { tokens: number; capacity: number; refillRate: number } | null
+        return (
+          <BurstTrafficHandling
+            tokens={tbState?.tokens || 10}
+            capacity={tbState?.capacity || 10}
+            refillRate={tbState?.refillRate || 1}
+            currentTime={demoTime}
+          />
+        )
+      }
+      case 'burst-traffic': {
+        const tbState = demoState as { tokens: number; capacity: number; refillRate: number } | null
+        return (
+          <BurstTrafficHandling
+            tokens={tbState?.tokens || 10}
+            capacity={tbState?.capacity || 10}
+            refillRate={tbState?.refillRate || 1}
+            currentTime={demoTime}
           />
         )
       }
