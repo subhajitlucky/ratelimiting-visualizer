@@ -8,6 +8,7 @@ import SlidingLogVisualizer from '../components/SlidingLogVisualizer'
 import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
 import RateLimitHeaders from '../components/RateLimitHeaders'
 import BurstTrafficHandling from '../components/BurstTrafficHandling'
+import SoftHardLimits from '../components/SoftHardLimits'
 import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual, HTTP429Visual, RetryAfterVisual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
@@ -101,6 +102,9 @@ export default function TopicPage() {
       case 'burst-traffic':
         newAlgorithm = new TokenBucketAlgorithm(10, 1) // 10 capacity, 1 token/sec (slow refill for burst demo)
         break
+      case 'soft-hard-limits':
+        newAlgorithm = new FixedWindowAlgorithm(10, 10000) // 10 requests per 10s
+        break
       default:
         newAlgorithm = new FixedWindowAlgorithm(10, 5000)
     }
@@ -163,6 +167,8 @@ export default function TopicPage() {
       setDemoState((algorithmInstance as SlidingWindowCounterType).getState(currentTime))
     } else if (topic.id === 'rate-limit-headers') {
       setDemoState((algorithmInstance as FixedWindowAlgorithmType).getState(currentTime))
+    } else if (topic.id === 'soft-hard-limits') {
+      setDemoState((algorithmInstance as FixedWindowAlgorithmType).getState(currentTime))
     } else if (topic.id === 'burst-traffic') {
       setDemoState((algorithmInstance as TokenBucketAlgorithmType).getState())
     } else if (topic.id === 'concurrency') {
@@ -216,6 +222,17 @@ export default function TopicPage() {
         return <HTTP429Visual activeRequests={demoEvents.length % 6} limit={5} />
       case 'retry-after':
         return <RetryAfterVisual activeRequests={demoEvents.length % 6} limit={5} />
+      case 'soft-hard-limits': {
+        const fwState = demoState as { currentCount: number } | null
+        return (
+          <SoftHardLimits
+            currentCount={fwState?.currentCount || 0}
+            limit={10}
+            softLimit={7}
+            hardLimit={12}
+          />
+        )
+      }
       case 'rate-limit-headers': {
         const fwState = demoState as { currentCount: number; windowStart: number; windowEnd: number } | null
         const lastEvent = demoEvents[demoEvents.length - 1]
