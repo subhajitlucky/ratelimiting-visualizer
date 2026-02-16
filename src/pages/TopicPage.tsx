@@ -9,6 +9,7 @@ import SlidingCounterVisualizer from '../components/SlidingCounterVisualizer'
 import RateLimitHeaders from '../components/RateLimitHeaders'
 import BurstTrafficHandling from '../components/BurstTrafficHandling'
 import SoftHardLimits from '../components/SoftHardLimits'
+import FairnessStarvation from '../components/FairnessStarvation'
 import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual, HTTP429Visual, RetryAfterVisual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
@@ -322,6 +323,8 @@ export default function TopicPage() {
           />
         )
       }
+      case 'fairness-starvation':
+        return <FairnessStarvation />
       default:
         return (
           <div className="bg-white dark:bg-gray-800 rounded-xl p-8 border border-gray-200 dark:border-gray-700 text-center">
