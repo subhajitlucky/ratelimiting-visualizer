@@ -277,3 +277,105 @@ export function DistributedRateLimitingVisual() {
     </div>
   )
 }
+
+/**
+ * Edge vs Origin Visualization
+ */
+export function EdgeVsOriginVisual() {
+  const [edgeActive, setEdgeActive] = useState(false)
+  const [originActive, setOriginActive] = useState(false)
+  const [requests, setRequests] = useState<{ id: number; status: 'blocked_edge' | 'blocked_origin' | 'passed'; type: 'malicious' | 'legit' }[]>([])
+
+  const sendRequest = (type: 'malicious' | 'legit') => {
+    const id = Date.now()
+    let status: 'blocked_edge' | 'blocked_origin' | 'passed' = 'passed'
+
+    if (edgeActive && type === 'malicious') {
+      status = 'blocked_edge'
+    } else if (originActive && type === 'malicious') {
+      status = 'blocked_origin'
+    }
+
+    setRequests(prev => [...prev.slice(-8), { id, status, type }])
+  }
+
+  return (
+    <div className="relative aspect-video bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 overflow-hidden flex flex-col items-center justify-center p-8">
+      <div className="absolute top-4 left-4 font-mono text-[10px] font-black text-zinc-500 uppercase tracking-widest">
+        NETWORK_TOPOLOGY_v1.0
+      </div>
+
+      <div className="flex items-center justify-between w-full gap-4">
+        {/* User Side */}
+        <div className="flex flex-col gap-4">
+          <button 
+            onClick={() => sendRequest('legit')}
+            className="px-4 py-2 bg-primary-500 text-black font-mono text-[8px] font-black border-2 border-black hover:bg-primary-400"
+          >
+            SEND_LEGIT_REQ
+          </button>
+          <button 
+            onClick={() => sendRequest('malicious')}
+            className="px-4 py-2 bg-red-500 text-white font-mono text-[8px] font-black border-2 border-black hover:bg-red-400"
+          >
+            SEND_ATTACK_REQ
+          </button>
+        </div>
+
+        {/* Edge Node */}
+        <div className={`relative w-24 h-32 border-4 flex flex-col items-center justify-center gap-2 transition-colors ${edgeActive ? 'border-primary-500 bg-primary-500/10' : 'border-zinc-400 bg-zinc-100'}`}>
+          <div className="text-[8px] font-black uppercase text-center">EDGE_GATEWAY (CDN)</div>
+          <div className={`w-4 h-4 rounded-full ${edgeActive ? 'bg-primary-500 shadow-[0_0_10px_rgba(0,255,65,1)]' : 'bg-zinc-300'}`} />
+          <button 
+            onClick={() => setEdgeActive(!edgeActive)}
+            className="text-[6px] font-mono border border-black px-1 uppercase"
+          >
+            {edgeActive ? 'DISABLE_LIMIT' : 'ENABLE_LIMIT'}
+          </button>
+        </div>
+
+        {/* Origin Server */}
+        <div className={`relative w-24 h-32 border-4 flex flex-col items-center justify-center gap-2 transition-colors ${originActive ? 'border-yellow-500 bg-yellow-500/10' : 'border-zinc-400 bg-zinc-100'}`}>
+          <div className="text-[8px] font-black uppercase text-center">ORIGIN_SERVER</div>
+          <div className={`w-4 h-4 rounded-full ${originActive ? 'bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,1)]' : 'bg-zinc-300'}`} />
+          <button 
+            onClick={() => setOriginActive(!originActive)}
+            className="text-[6px] font-mono border border-black px-1 uppercase"
+          >
+            {originActive ? 'DISABLE_LIMIT' : 'ENABLE_LIMIT'}
+          </button>
+        </div>
+      </div>
+
+      {/* Traffic Visualization */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+        <AnimatePresence>
+          {requests.map((req) => (
+            <motion.div
+              key={req.id}
+              initial={{ x: -200, opacity: 0 }}
+              animate={{ 
+                x: req.status === 'blocked_edge' ? -50 : (req.status === 'blocked_origin' ? 50 : 200),
+                opacity: [0, 1, 1, 0],
+                scale: req.status !== 'passed' ? [1, 1.2, 0] : 1
+              }}
+              transition={{ duration: 1.5, ease: "linear" }}
+              className={`absolute w-4 h-4 rounded-full border-2 border-black ${req.type === 'legit' ? 'bg-primary-500' : 'bg-red-500'}`}
+            >
+              {req.status !== 'passed' && (
+                <div className="absolute -top-4 left-0 text-[6px] font-black text-red-500 whitespace-nowrap">
+                  BLOCKED!
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      <div className="absolute bottom-4 inset-x-8 bg-black text-white p-2 font-mono text-[8px] text-center border border-primary-500">
+        STORY: EDGE IS LIKE A SECURITY GUARD AT THE FRONT GATE. ORIGIN IS LIKE A GUARD AT THE VAULT. 
+        IT'S CHEAPER AND SAFER TO STOP BAD ACTORS AT THE FRONT GATE!
+      </div>
+    </div>
+  )
+}
