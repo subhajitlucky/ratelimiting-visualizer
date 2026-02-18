@@ -174,3 +174,106 @@ export function MemoryCostVisual() {
     </div>
   )
 }
+
+/**
+ * Distributed Rate Limiting Visualization
+ */
+export function DistributedRateLimitingVisual() {
+  const [nodes, setNodes] = useState([
+    { id: 1, requests: 0, status: 'idle' },
+    { id: 2, requests: 0, status: 'idle' },
+    { id: 3, requests: 0, status: 'idle' }
+  ])
+  const [sharedState, setSharedState] = useState({ count: 0, limit: 10 })
+  const [latency, setLatency] = useState(false)
+
+  const handleRequest = (nodeId: number) => {
+    // Simulate network trip to Redis/Shared Store
+    setNodes(prev => prev.map(n => n.id === nodeId ? { ...n, status: 'syncing' } : n))
+    
+    setTimeout(() => {
+      setSharedState(prev => {
+        const allowed = prev.count < prev.limit
+        if (allowed) {
+          return { ...prev, count: prev.count + 1 }
+        }
+        return prev
+      })
+      
+      setNodes(prev => prev.map(n => n.id === nodeId ? { ...n, status: 'idle', requests: n.requests + 1 } : n))
+    }, latency ? 1000 : 100)
+  }
+
+  return (
+    <div className="relative aspect-video bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 overflow-hidden flex flex-col items-center justify-center p-8">
+      <div className="absolute top-4 left-4 font-mono text-[10px] font-black text-zinc-500 uppercase tracking-widest">
+        DISTRIBUTED_CONSENSUS_v1.0
+      </div>
+
+      <div className="grid grid-cols-3 gap-8 w-full mb-12">
+        {nodes.map(node => (
+          <div key={node.id} className="flex flex-col items-center gap-2">
+            <div className={`w-full p-4 border-2 border-black dark:border-white bg-white dark:bg-black text-center relative ${node.status === 'syncing' ? 'animate-pulse' : ''}`}>
+              <div className="text-[8px] font-mono text-zinc-500 mb-1">NODE_0{node.id}</div>
+              <div className="text-xl font-black">{node.requests}</div>
+              {node.status === 'syncing' && (
+                <motion.div 
+                  layoutId="sync"
+                  className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-primary-500"
+                >
+                  SYNCING...
+                </motion.div>
+              )}
+            </div>
+            <button 
+              onClick={() => handleRequest(node.id)}
+              className="w-full py-1 bg-zinc-900 text-white font-mono text-[8px] uppercase border-2 border-black hover:bg-primary-500 hover:text-black"
+            >
+              REQ
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Shared Store (Redis) */}
+      <div className="relative w-48 p-6 bg-black border-4 border-primary-500 text-center shadow-[0_0_20px_rgba(0,255,65,0.2)]">
+        <div className="text-[10px] font-mono text-primary-500 font-black mb-2">SHARED_REDIS_STORE</div>
+        <div className="flex justify-around items-end h-12 gap-1">
+          {Array.from({ length: sharedState.limit }).map((_, i) => (
+            <div 
+              key={i} 
+              className={`flex-1 border border-primary-500/30 ${i < sharedState.count ? 'bg-primary-500' : 'bg-transparent'}`}
+              style={{ height: `${(i + 1) * 10}%` }}
+            />
+          ))}
+        </div>
+        <div className="mt-2 font-mono text-xs text-white font-black">
+          {sharedState.count} / {sharedState.limit}
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center gap-4 bg-black p-2 border-2 border-primary-500">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={latency} 
+            onChange={() => setLatency(!latency)}
+            className="w-4 h-4 accent-primary-500"
+          />
+          <span className="font-mono text-[8px] text-white uppercase">SIMULATE_NETWORK_LATENCY</span>
+        </label>
+        <button 
+          onClick={() => { setSharedState({ ...sharedState, count: 0 }); setNodes(nodes.map(n => ({ ...n, requests: 0 }))) }}
+          className="px-2 py-1 bg-zinc-800 text-[8px] font-mono text-zinc-400 border border-zinc-700 hover:text-white"
+        >
+          RESET_SYNC
+        </button>
+      </div>
+
+      <div className="absolute bottom-4 inset-x-8 bg-black text-white p-2 font-mono text-[8px] text-center border border-primary-500">
+        STORY: THREE CASHIERS (NODES) ARE SHARING ONE CASH DRAWER (REDIS). EVERY TIME SOMEONE BUYS 
+        A COOKIE, THE CASHIER MUST RUN TO THE DRAWER TO MAKE SURE THERE ARE STILL COOKIES LEFT!
+      </div>
+    </div>
+  )
+}
