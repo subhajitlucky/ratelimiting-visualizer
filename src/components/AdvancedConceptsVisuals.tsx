@@ -379,3 +379,113 @@ export function EdgeVsOriginVisual() {
     </div>
   )
 }
+
+/**
+ * API Gateway Rate Limiting Visualization
+ */
+export function ApiGatewayRateLimitVisual() {
+  const [activeTab, setActiveTab] = useState<'per-key' | 'per-ip' | 'per-cert'>('per-key')
+  const [requests, setRequests] = useState<{ id: number; type: string; status: 'pass' | 'fail' }[]>([])
+  const [limits, setLimits] = useState({ 'per-key': 5, 'per-ip': 3, 'per-cert': 2 })
+  const [counts, setCounts] = useState({ 'per-key': 0, 'per-ip': 0, 'per-cert': 0 })
+
+  const handleRequest = (type: 'per-key' | 'per-ip' | 'per-cert') => {
+    const id = Date.now()
+    const allowed = counts[type] < limits[type]
+    
+    if (allowed) {
+      setCounts(prev => ({ ...prev, [type]: prev[type] + 1 }))
+    }
+    
+    setRequests(prev => [...prev.slice(-10), { id, type, status: allowed ? 'pass' : 'fail' }])
+  }
+
+  const reset = () => {
+    setCounts({ 'per-key': 0, 'per-ip': 0, 'per-cert': 0 })
+    setRequests([])
+  }
+
+  return (
+    <div className="relative aspect-video bg-zinc-100 dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 overflow-hidden flex flex-col items-center justify-center p-8">
+      <div className="absolute top-4 left-4 font-mono text-[10px] font-black text-zinc-500 uppercase tracking-widest">
+        API_GATEWAY_ENFORCEMENT_v1.0
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 w-full mb-8">
+        {(['per-key', 'per-ip', 'per-cert'] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`py-2 px-1 border-2 font-mono text-[8px] font-black uppercase transition-all ${
+              activeTab === tab ? 'bg-primary-500 text-black border-black' : 'bg-black text-zinc-500 border-zinc-800'
+            }`}
+          >
+            {tab.replace('-', '_')}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex-1 w-full flex items-center justify-between gap-8">
+        {/* Gateway Logic */}
+        <div className="relative w-1/3 h-48 border-4 border-black dark:border-white bg-white dark:bg-black p-4 flex flex-col items-center justify-center gap-4">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-primary-500 px-2 font-mono text-[8px] font-black">
+            GATEWAY_LOGIC
+          </div>
+          <div className="text-center">
+            <div className="text-[10px] font-black mb-1 uppercase">POLICY: {activeTab.replace('-', ' ').toUpperCase()}</div>
+            <div className="text-2xl font-black text-primary-500">{counts[activeTab]} / {limits[activeTab]}</div>
+          </div>
+          <button
+            onClick={() => handleRequest(activeTab)}
+            className="w-full py-2 bg-zinc-900 text-white font-mono text-[8px] uppercase font-black hover:bg-primary-500 hover:text-black transition-colors border-2 border-black"
+          >
+            SEND_REQUEST
+          </button>
+        </div>
+
+        {/* Visual representation of the "Filter" */}
+        <div className="flex-1 flex flex-col items-center justify-center relative min-h-[150px]">
+          <div className="w-1 h-32 bg-zinc-300 dark:bg-zinc-700 absolute left-1/2 -translate-x-1/2" />
+          <AnimatePresence>
+            {requests.map((req, i) => (
+              <motion.div
+                key={req.id}
+                initial={{ x: -100, opacity: 0 }}
+                animate={{ x: req.status === 'pass' ? 100 : 0, opacity: [0, 1, 1, 0] }}
+                transition={{ duration: 1, ease: "easeInOut" }}
+                className={`absolute w-6 h-6 border-2 border-black flex items-center justify-center text-[8px] font-black ${
+                  req.status === 'pass' ? 'bg-primary-500' : 'bg-red-500 text-white'
+                }`}
+                style={{ top: `${(i % 5) * 30}px` }}
+              >
+                {req.status === 'pass' ? 'OK' : '429'}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {/* Backend Services */}
+        <div className="w-1/4 h-32 border-2 border-dashed border-zinc-400 flex items-center justify-center opacity-50">
+          <div className="text-[8px] font-mono text-center uppercase">BACKEND_MICROSERVICES</div>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center gap-4 bg-black p-2 border-2 border-primary-500">
+        <button 
+          onClick={reset}
+          className="px-4 py-1 bg-zinc-800 text-[8px] font-mono text-zinc-400 border border-zinc-700 hover:text-white uppercase font-black"
+        >
+          CLEAR_CACHE
+        </button>
+        <div className="text-[8px] font-mono text-primary-500 italic">
+          STATE IS PERSISTED IN SHARED DISTRIBUTED CACHE (e.g. REDIS)
+        </div>
+      </div>
+
+      <div className="absolute bottom-4 inset-x-8 bg-black text-white p-2 font-mono text-[8px] text-center border border-primary-500">
+        STORY: THE GATEWAY SITS IN FRONT OF ALL YOUR SERVICES. IT CHECKS THE REQUEST'S IDENTITY (KEY, IP, OR CERT) 
+        AND DECIDES IF IT CAN PASS BEFORE THE BACKEND EVEN SEES IT!
+      </div>
+    </div>
+  )
+}

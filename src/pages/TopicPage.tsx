@@ -10,7 +10,7 @@ import RateLimitHeaders from '../components/RateLimitHeaders'
 import BurstTrafficHandling from '../components/BurstTrafficHandling'
 import SoftHardLimits from '../components/SoftHardLimits'
 import FairnessStarvation from '../components/FairnessStarvation'
-import { ClockSkewVisual, MemoryCostVisual, DistributedRateLimitingVisual, EdgeVsOriginVisual } from '../components/AdvancedConceptsVisuals'
+import { ClockSkewVisual, MemoryCostVisual, DistributedRateLimitingVisual, EdgeVsOriginVisual, ApiGatewayRateLimitVisual } from '../components/AdvancedConceptsVisuals'
 import { BouncerVisual, RestaurantVisual, ClientServerVisual, ConcurrencyVisual, HTTP429Visual, RetryAfterVisual } from '../components/FundamentalVisuals'
 import { useState, useEffect } from 'react'
 import type {
@@ -334,6 +334,8 @@ export default function TopicPage() {
         return <DistributedRateLimitingVisual />
       case 'edge-vs-origin':
         return <EdgeVsOriginVisual />
+      case 'api-gateway-rate-limiting':
+        return <ApiGatewayRateLimitVisual />
       default:
         return (
           <div className="bg-white dark:bg-gray-800 rounded-xl p-8 border border-gray-200 dark:border-gray-700 text-center">
