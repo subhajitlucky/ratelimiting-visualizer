@@ -99,6 +99,7 @@ export default function TopicPage() {
         newAlgorithm = new ConcurrencyLimiter(10) // 10 concurrent slots
         break
       case 'rate-limit-headers':
+      case 'headers-implementation':
         newAlgorithm = new FixedWindowAlgorithm(10, 30000) // 10 requests per 30s
         break
       case 'burst-traffic':
@@ -235,7 +236,8 @@ export default function TopicPage() {
           />
         )
       }
-      case 'rate-limit-headers': {
+      case 'rate-limit-headers':
+      case 'headers-implementation': {
         const fwState = demoState as { currentCount: number; windowStart: number; windowEnd: number } | null
         const lastEvent = demoEvents[demoEvents.length - 1]
         const limit = 10
