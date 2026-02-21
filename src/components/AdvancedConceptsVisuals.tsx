@@ -386,7 +386,7 @@ export function EdgeVsOriginVisual() {
 export function ApiGatewayRateLimitVisual() {
   const [activeTab, setActiveTab] = useState<'per-key' | 'per-ip' | 'per-cert'>('per-key')
   const [requests, setRequests] = useState<{ id: number; type: string; status: 'pass' | 'fail' }[]>([])
-  const [limits, setLimits] = useState({ 'per-key': 5, 'per-ip': 3, 'per-cert': 2 })
+  const [limits] = useState({ 'per-key': 5, 'per-ip': 3, 'per-cert': 2 })
   const [counts, setCounts] = useState({ 'per-key': 0, 'per-ip': 0, 'per-cert': 0 })
 
   const handleRequest = (type: 'per-key' | 'per-ip' | 'per-cert') => {

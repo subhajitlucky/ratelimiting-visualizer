@@ -17,15 +17,6 @@ const FairnessStarvation: React.FC = () => {
   const [counters, setCounters] = useState([0, 0, 0]);
   const [isAutoTraffic, setIsAutoTraffic] = useState(false);
 
-  // Auto traffic simulation
-  useEffect(() => {
-    if (!isAutoTraffic) return;
-    const interval = setInterval(() => {
-      addRequest(Math.random() > 0.7 ? (Math.random() > 0.5 ? 0 : 2) : 1);
-    }, 800);
-    return () => clearInterval(interval);
-  }, [isAutoTraffic]);
-
   const addRequest = (userId: number) => {
     const newReq: Request = {
       id: Date.now() + Math.random(),
@@ -34,6 +25,15 @@ const FairnessStarvation: React.FC = () => {
     };
     setRequests(prev => [...prev.slice(-14), newReq]);
   };
+
+  // Auto traffic simulation
+  useEffect(() => {
+    if (!isAutoTraffic) return;
+    const interval = setInterval(() => {
+      addRequest(Math.random() > 0.7 ? (Math.random() > 0.5 ? 0 : 2) : 1);
+    }, 800);
+    return () => clearInterval(interval);
+  }, [isAutoTraffic]);
 
   const processNext = () => {
     if (processing || requests.length === 0) return;
